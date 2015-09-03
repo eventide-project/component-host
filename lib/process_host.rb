@@ -1,178 +1,108 @@
 class ProcessHost
-  attr_reader :heartbeat_threshold
-  attr_reader :last_heartbeat
-  attr_reader :poll_period
-  attr_reader :processes
-  attr_writer :exception_notifier
+  autoload :Builder, "process_host/builder"
+  autoload :Heartbeat, "process_host/heartbeat"
+  autoload :Manager, "process_host/manager"
 
-  def initialize logger, poll_period: 5, heartbeat: 10
-    @logger = logger
-    @poll_period = poll_period
-    @processes = []
-    @heartbeat_threshold = heartbeat
+  def self.build &block
+    Builder.call &block
   end
 
-  def add process_delegate
-    process = Process.new process_delegate
-    processes << process
-    logger.debug "Added process #{process_delegate.inspect}"
+  attr_writer :exception_notifier
+  attr_reader :heartbeat
+  attr_writer :logger
+  attr_reader :poll_period
+  attr_reader :managers
+
+  def initialize heartbeat, poll_period
+    @heartbeat = heartbeat
+    @poll_period = poll_period
+    @managers = []
+  end
+
+  def add manager, name = nil
+    name ||= manager.class.name
+    manager = Manager.new manager, name
+    managers << manager
+    logger.debug "Added manager #{manager.inspect}"
   end
 
   def run iterations = Float::INFINITY
-    update_heartbeat
-    Signal.trap "USR1", &method(:check_heartbeat)
+    Signal.trap "USR1", &heartbeat.method(:check)
     logger.info "Starting infinite loop"
 
     while iterations > 0
-      Iteration.(self)
+      next_iteration
       iterations -= 1
     end
   end
 
-  def check_heartbeat *;
-    seconds = now - last_heartbeat
-    if seconds > heartbeat_threshold
-      raise HeartbeatError.new heartbeat_threshold
+  def next_iteration
+    select_group = next_select_group
+    sockets_ready = select select_group
+    logger.debug &method(:print_iteration)
+
+    sockets_ready.each do |socket|
+      manager = select_group.fetch socket.fileno
+      logger.debug do "Manager is ready to read: #{manager.inspect}" end
+      capture_errors manager do
+        manager.activate_process
+      end
     end
   end
 
-  def update_heartbeat
-    @last_heartbeat = now
+  def select select_group
+    sleep poll_period and return [] if select_group.empty?
+    sockets = select_group.values.map &:socket
+    sockets, _ = IO.select sockets, [], [], poll_period
+    Array(sockets)
   end
 
-  def now
-    Time.now
+  def next_select_group
+    managers.each_with_object Hash.new do |manager, hsh|
+      capture_errors manager do
+        next unless manager.prepare_socket
+        hsh[manager.socket.fileno] = manager
+      end
+    end
+  end
+
+  def print_iteration
+    processes = managers.map do |manager|
+      "#{manager.name}: #{manager.connected? ? "connected" : "not connected"}"
+    end
+
+    <<-LOG
+Starting iteration; processes:
+\t#{processes * "\n\t"}
+    LOG
+  end
+
+  def capture_errors manager
+    yield
+  rescue => error
+    exception_notifier.(manager.process, error)
+    raise error
+  end
+
+  def heartbeat
+    @heartbeat ||= Heartbeat.build config
   end
 
   def exception_notifier
-    @exception_notifier or ->*{}
+    @exception_notifier or NullExceptionNotifier
   end
 
-  class HeartbeatError < StandardError
-    attr_reader :threshold
-
-    def initialize threshold
-      @threshold = threshold
-    end
-
-    def to_s
-      "Heartbeat window of #{threshold}s exceeded"
-    end
+  def logger
+    @logger or NullLogger
   end
 
-  class Iteration
-    def self.call process_host
-      instance = build process_host
-      instance.call
-    end
-
-    def self.build process_host
-      processes = process_host.processes
-      poll_period = process_host.poll_period
-      logger = process_host.logger
-      exception_notifier = process_host.exception_notifier
-      new processes, poll_period, logger, exception_notifier
-    end
-
-    attr_reader :exception_notifier
-    attr_reader :logger
-    attr_reader :poll_period
-    attr_reader :processes
-
-    def initialize processes, poll_period, logger, exception_notifier
-      @logger = logger
-      @poll_period = poll_period
-      @processes = processes
-      @exception_notifier = exception_notifier
-    end
-
-    def call
-      select_group = next_select_group
-      sockets_ready = select select_group
-
-      logger.debug do "Iteration: #{select_group.size} waiting processes" end
-      logger.debug do "Process states: #{processes.map(&:state) * ", "}" end
-      logger.debug do "There are #{sockets_ready} sockets ready" end
-
-      sockets_ready.each do |socket|
-        process = select_group.fetch socket.fileno
-        logger.debug do "Process is ready to read: #{process.inspect}" end
-        capture_errors process do
-          process.ready_to_read
-        end
-      end
-    end
-
-    def select select_group
-      sleep poll_period and return [] if select_group.empty?
-      sockets = select_group.values.map &:socket
-      sockets, _ = IO.select sockets, [], [], poll_period
-      Array(sockets)
-    end
-
-    def next_select_group
-      processes.each_with_object Hash.new do |process, hsh|
-        capture_errors process do
-          new_state = process.advance
-          next unless new_state == :waiting
-          hsh[process.socket.fileno] = process
-        end
-      end
-    end
-
-    def capture_errors process
-      yield
-    rescue => error
-      exception_notifier.(process.delegate, error)
-      raise error
+  module NullLogger
+    %i(debug info warn error fatal unknown).each do |method_name|
+      define_singleton_method method_name do |*| end
     end
   end
 
-  class Process
-    attr_reader :delegate
-    attr_reader :socket
-
-    def initialize delegate
-      @delegate = delegate
-      @prepared = false
-    end
-
-    def advance
-      public_send state
-      state
-    end
-
-    def state
-      if socket.nil?
-        :not_connected
-      elsif not prepared?
-        :not_prepared
-      else
-        :waiting
-      end
-    end
-
-    def not_connected
-      @socket = delegate.connect
-      not_prepared if socket
-    end
-
-    def not_prepared
-      delegate.prepare_socket socket if delegate.respond_to? :prepare_socket
-      @prepared = true
-    end
-
-    def ready_to_read
-      delegate.receive_socket socket
-      @prepared = false
-      @socket = nil if socket.closed?
-    end
-
-    def prepared?
-      if @prepared then true else false end
-    end
-
-    def waiting
-    end
+  module NullExceptionNotifier
+    def self.call *; end
   end
 end

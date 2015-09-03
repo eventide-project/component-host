@@ -37,12 +37,12 @@ end
 
 errors = {}
 
-exception_notifier = -> process, error do
+builder = ProcessHost::Builder.new
+builder.exception_notifier = -> process, error do
   errors[process.class.name] = error.to_s
 end
 
-host = ProcessHost.new logger
-host.exception_notifier = exception_notifier
+host = builder.()
 host.add CantConnect.new
 begin
   host.run
@@ -52,8 +52,7 @@ end
 rd, wr = UNIXSocket.pair
 wr.write "data"
 
-host = ProcessHost.new logger
-host.exception_notifier = exception_notifier
+host = builder.()
 host.add ErrorsDuringOperation.new rd
 begin
   host.run

@@ -103,9 +103,12 @@ max_per_connection = 333
 client = Client.new requests
 server = Server.new max_per_connection
 
-process_host = ProcessHost.new logger, poll_period: 0
-process_host.add client
-process_host.add server
+process_host = ProcessHost.build do |config|
+  config.logger = logger
+  config.poll_period_ms = 0
+end
+process_host.add client, "http-client"
+process_host.add server, "http-server"
 
 t0 = Time.now
 

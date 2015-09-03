@@ -13,7 +13,10 @@ def timer duration, &block
 rescue Timeout::Error
 end
 
-process_host = ProcessHost.new logger, heartbeat: 0.05
+process_host = ProcessHost.build do |config|
+  config.logger = logger
+  config.heartbeat_threshold_ms = 50
+end
 process_host.add HungProcess.new
 
 timer 0.1 do
@@ -23,7 +26,7 @@ end
 error = nil
 begin
   Process.kill "USR1", Process.pid
-rescue ProcessHost::HeartbeatError
+rescue ProcessHost::Heartbeat::Error
   error = true
 end
 

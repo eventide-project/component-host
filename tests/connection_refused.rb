@@ -22,6 +22,9 @@ class Server
   end
 end
 
-process_host = ProcessHost.new logger, poll_period: 0.5
+process_host = ProcessHost.build do |config|
+  config.logger = logger
+  config.poll_period_ms = 0.5
+end
 process_host.add Server.new
 process_host.run 1
