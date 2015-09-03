@@ -1,11 +1,15 @@
 class ProcessHost
+  attr_reader :heartbeat_threshold
+  attr_reader :last_heartbeat
   attr_reader :poll_period
   attr_reader :processes
+  attr_writer :exception_notifier
 
-  def initialize logger, poll_period = 10
+  def initialize logger, poll_period: 5, heartbeat: 10
     @logger = logger
     @poll_period = poll_period
     @processes = []
+    @heartbeat_threshold = heartbeat
   end
 
   def add process_delegate
@@ -14,11 +18,45 @@ class ProcessHost
     logger.debug "Added process #{process_delegate.inspect}"
   end
 
-  def run
+  def run iterations = Float::INFINITY
+    update_heartbeat
+    Signal.trap "USR1", &method(:check_heartbeat)
     logger.info "Starting infinite loop"
 
-    loop do
+    while iterations > 0
       Iteration.(self)
+      iterations -= 1
+    end
+  end
+
+  def check_heartbeat *;
+    seconds = now - last_heartbeat
+    if seconds > heartbeat_threshold
+      raise HeartbeatError.new heartbeat_threshold
+    end
+  end
+
+  def update_heartbeat
+    @last_heartbeat = now
+  end
+
+  def now
+    Time.now
+  end
+
+  def exception_notifier
+    @exception_notifier or ->*{}
+  end
+
+  class HeartbeatError < StandardError
+    attr_reader :threshold
+
+    def initialize threshold
+      @threshold = threshold
+    end
+
+    def to_s
+      "Heartbeat window of #{threshold}s exceeded"
     end
   end
 
@@ -32,35 +70,41 @@ class ProcessHost
       processes = process_host.processes
       poll_period = process_host.poll_period
       logger = process_host.logger
-      new processes, poll_period, logger
+      exception_notifier = process_host.exception_notifier
+      new processes, poll_period, logger, exception_notifier
     end
 
+    attr_reader :exception_notifier
     attr_reader :logger
     attr_reader :poll_period
     attr_reader :processes
 
-    def initialize processes, poll_period, logger
+    def initialize processes, poll_period, logger, exception_notifier
       @logger = logger
       @poll_period = poll_period
       @processes = processes
+      @exception_notifier = exception_notifier
     end
 
     def call
       select_group = next_select_group
-      logger.debug "Iteration: #{select_group.size} waiting processes"
-      logger.debug "Process states: #{processes.map(&:state) * ", "}"
-
       sockets_ready = select select_group
-      logger.debug "There are #{sockets_ready} sockets ready"
+
+      logger.debug do "Iteration: #{select_group.size} waiting processes" end
+      logger.debug do "Process states: #{processes.map(&:state) * ", "}" end
+      logger.debug do "There are #{sockets_ready} sockets ready" end
 
       sockets_ready.each do |socket|
         process = select_group.fetch socket.fileno
-        logger.debug "Process is ready to read: #{process.inspect}"
-        process.ready_to_read
+        logger.debug do "Process is ready to read: #{process.inspect}" end
+        capture_errors process do
+          process.ready_to_read
+        end
       end
     end
 
     def select select_group
+      sleep poll_period and return [] if select_group.empty?
       sockets = select_group.values.map &:socket
       sockets, _ = IO.select sockets, [], [], poll_period
       Array(sockets)
@@ -68,10 +112,19 @@ class ProcessHost
 
     def next_select_group
       processes.each_with_object Hash.new do |process, hsh|
-        new_state = process.advance
-        next unless new_state == :waiting
-        hsh[process.socket.fileno] = process
+        capture_errors process do
+          new_state = process.advance
+          next unless new_state == :waiting
+          hsh[process.socket.fileno] = process
+        end
       end
+    end
+
+    def capture_errors process
+      yield
+    rescue => error
+      exception_notifier.(process.delegate, error)
+      raise error
     end
   end
 
@@ -101,7 +154,7 @@ class ProcessHost
 
     def not_connected
       @socket = delegate.connect
-      not_prepared
+      not_prepared if socket
     end
 
     def not_prepared
