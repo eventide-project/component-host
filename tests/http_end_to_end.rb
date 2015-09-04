@@ -96,9 +96,9 @@ class Client
 end
 
 # Test iterates n times
-requests = 1000
+requests = 100
 # Persist connections n times before closing connection
-max_per_connection = 333
+max_per_connection = 50
 
 client = Client.new requests
 server = Server.new max_per_connection
