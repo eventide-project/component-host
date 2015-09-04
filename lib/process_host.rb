@@ -1,9 +1,10 @@
 class ProcessHost
   autoload :Builder, "process_host/builder"
   autoload :Heartbeat, "process_host/heartbeat"
+  autoload :Iteration, "process_host/iteration"
   autoload :Logging, "process_host/logging"
-  autoload :Set, "process_host/set"
   autoload :ProcessWrapper, "process_host/process_wrapper"
+  autoload :StateMachine, "process_host/state_machine"
 
   include Logging
 
@@ -14,17 +15,19 @@ class ProcessHost
   attr_writer :exception_notifier
   attr_reader :heartbeat
   attr_reader :poll_period
-  attr_reader :set
+  attr_reader :processes
 
   def initialize heartbeat, poll_period
     @heartbeat = heartbeat
     @poll_period = poll_period
-    @set = Set.new
+    @processes = []
   end
 
   def add process, name = nil
     name ||= process.class.name
-    set[name] = wrap process
+    wrapped_process = wrap process
+    sm = StateMachine.new wrapped_process
+    processes << sm
     logger.debug "Added process #{process.inspect}"
   end
 
@@ -34,9 +37,17 @@ class ProcessHost
 
     while iterations > 0
       heartbeat.update
-      set.next_process poll_period
+      iterate
       iterations -= 1
     end
+  end
+
+  def iterate
+    Iteration.(processes, poll_period)
+  end
+
+  def wrap process
+    ProcessWrapper.new process, heartbeat, exception_notifier
   end
 
   def heartbeat
@@ -45,10 +56,6 @@ class ProcessHost
 
   def exception_notifier
     @exception_notifier or NullExceptionNotifier
-  end
-
-  def wrap process
-    ProcessWrapper.new process, heartbeat, exception_notifier
   end
 
   module NullExceptionNotifier
