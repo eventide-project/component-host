@@ -30,7 +30,7 @@ ProcessHost will keep a heartbeat updated internally each time it swaps between 
 
 It is the responsibility of your processes to handle their own errors. The process host will die if any process raises an unhandled error. The reasoning for this is twofold: one, your operating system likely offers you some sort of process supervision that can restart the process automatically. There is little sense in duplicating that work. Two, your processes are likely related to one another. Is your application still functional if one process dies, but another survives? Do we restart the dead process? What if restarting it causes it to repeat the same error over and over? Error handling is therefore the responsibility of your process.
 
-This doesn't mean, however, that you can't trap errors for **notification** purposes (more on that below). The errors you trap, however, will be immediately re-raised.
+This doesn't mean, however, that you can't trap errors for *notification* purposes (more on that below). The errors you trap, however, will be immediately re-raised.
 
 ## Usage
 
