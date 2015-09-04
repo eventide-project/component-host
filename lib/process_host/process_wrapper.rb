@@ -1,40 +1,40 @@
 class ProcessHost
   class ProcessWrapper
-    attr_reader :process
-    attr_reader :heartbeat
-    attr_reader :exception_notifier
+    include Observable
 
-    def initialize process, heartbeat, exception_notifier
+    DELEGATE_METHODS = %i(connect prepare_socket receive_socket)
+
+    attr_reader :name
+    attr_reader :process
+    alias_method :delegate, :process
+
+    def initialize name, process
+      @name = name
       @process = process
-      @heartbeat = heartbeat
-      @exception_notifier = exception_notifier
     end
 
-    %i(connect prepare_socket receive_socket).each do |method_name|
+    DELEGATE_METHODS.each do |method_name|
       define_method method_name do |*args|
-        value = nil
-
-        heartbeat.update
-        notify_exceptions do
-          value = process.public_send method_name, *args
-        end
-
-        heartbeat.update
-        value
+        invoke method_name, args
       end
     end
 
-    def respond_to? method_name
-      process.respond_to? method_name
+    def invoke method_name, args
+      changed
+      notify_observers :dispatch, self, method_name
+      process.public_send method_name, *args
+    rescue => error
+      changed
+      notify_observers :error, self, error
+      raise error
     end
 
-    private
-
-    def notify_exceptions
-      return yield
-    rescue => error
-      exception_notifier.(process, error)
-      raise error
+    def respond_to? method_name
+      if DELEGATE_METHODS.include? method_name
+        process.respond_to? method_name
+      else
+        super
+      end
     end
   end
 end

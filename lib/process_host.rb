@@ -1,8 +1,11 @@
+require "observer"
+
 class ProcessHost
   autoload :Builder, "process_host/builder"
   autoload :Heartbeat, "process_host/heartbeat"
   autoload :Iteration, "process_host/iteration"
   autoload :Logging, "process_host/logging"
+  autoload :ProcessObserver, "process_host/process_observer"
   autoload :ProcessWrapper, "process_host/process_wrapper"
   autoload :StateMachine, "process_host/state_machine"
 
@@ -12,7 +15,7 @@ class ProcessHost
     Builder.call &block
   end
 
-  attr_writer :exception_notifier
+  attr_accessor :exception_notifier
   attr_reader :heartbeat
   attr_reader :poll_period
   attr_reader :processes
@@ -25,8 +28,11 @@ class ProcessHost
 
   def add process, name = nil
     name ||= process.class.name
-    wrapped_process = wrap process
-    sm = StateMachine.new wrapped_process
+
+    wrapper = ProcessWrapper.new name, process
+    wrapper.add_observer observer
+    sm = StateMachine.new wrapper
+
     processes << sm
     logger.debug "Added process #{process.inspect}"
   end
@@ -46,19 +52,11 @@ class ProcessHost
     Iteration.(processes, poll_period)
   end
 
-  def wrap process
-    ProcessWrapper.new process, heartbeat, exception_notifier
-  end
-
   def heartbeat
     @heartbeat ||= Heartbeat.build config
   end
 
-  def exception_notifier
-    @exception_notifier or NullExceptionNotifier
-  end
-
-  module NullExceptionNotifier
-    def self.call *; end
+  def observer
+    @observer ||= ProcessObserver.build self
   end
 end
