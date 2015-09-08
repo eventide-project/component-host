@@ -3,24 +3,25 @@ require "process_host"
 
 require "http/protocol"
 require "socket"
+require 'timeout'
 
 class Server
-  attr_reader :persistent_connections
+  attr_reader :connections
+  attr_reader :max_per_connection
 
   def initialize max_per_connection
-    @persistent_connections = Hash.new max_per_connection
+    @connections = max_per_connection
+    @max_per_connection = max_per_connection
   end
 
-  def connect
-    client_socket = tcp_server.accept_nonblock
+  def connect io
+    io.connect tcp_server.accept_nonblock
   rescue IO::WaitReadable, Errno::EINTR
-  ensure
-    return client_socket
   end
 
-  def receive_socket socket
+  def next! io
     builder = HTTP::Protocol::Request.builder
-    builder << socket.gets until builder.finished_headers?
+    builder << io.gets until builder.finished_headers?
 
     request = builder.message
 
@@ -33,27 +34,30 @@ class Server
     response = HTTP::Protocol::Response.new 200, "OK"
     response["Content-Length"] = data.size
 
-    conn_count = consume_use socket
+    conn_count = consume_use
+    close_connection = conn_count.zero?
 
-    if conn_count.zero?
+    if close_connection
       response["Connection"] = "close"
     else
       response["Connection"] = "keep-alive"
       response["Keep-Alive"] = "max=#{conn_count},timeout=120"
     end
 
-    socket.write response
-    socket.write data
-    socket.close if conn_count.zero?
+    response.to_s.each_line do |line|
+      io.puts line
+    end
+    io.write data
+    io.close if close_connection
   end
 
   private
 
-  def consume_use socket
-    persistent_connections[socket.fileno] -= 1
-    max = persistent_connections[socket.fileno]
-    persistent_connections.delete socket.fileno if max.zero?
-    max
+  def consume_use
+    @connections -= 1
+    return connections
+  ensure
+    @connections = max_per_connection if connections.zero?
   end
 
   def tcp_server
@@ -63,33 +67,32 @@ end
 
 class Client
   attr_reader :count
+  attr_reader :socket
 
   def initialize count
     @count = count
   end
 
-  def connect
-    TCPSocket.new "127.0.0.1", 9999
-  rescue Errno::ECONNREFUSED
+  def connect io
+    socket = TCPSocket.new "127.0.0.1", 9999
+    io.connect socket
   end
 
-  def prepare_socket socket
+  def next! io
     request = HTTP::Protocol::Request.new "GET", "/test-pattern/#{count}"
     request["Host"] = "localhost"
-    socket.write request
-  end
+    io.write request
 
-  def receive_socket socket
     builder = HTTP::Protocol::Response.builder
-    builder << socket.gets until builder.finished_headers?
+    builder << io.gets until builder.finished_headers?
 
     response = builder.message
     content_length = response["Content-Length"].to_i
 
-    data = socket.read content_length
+    data = io.read content_length
     @count = data.to_i
     logger.info do "Count is now #{count}; Connection=#{response["Connection"]}" end
-    socket.close if response["Connection"] == "close"
+    io.close if response["Connection"] == "close"
 
     raise StopIteration if count.zero?
   end
@@ -100,25 +103,29 @@ requests = 100
 # Persist connections n times before closing connection
 max_per_connection = 50
 
-client = Client.new requests
-server = Server.new max_per_connection
-
 process_host = ProcessHost.build do |config|
   config.logger = logger
   config.poll_period_ms = 0
 end
-process_host.add client, "http-client"
-process_host.add server, "http-server"
 
 t0 = Time.now
 
 at_exit do
-  assert client.count, :equals => 0
+  assert $client, :kind_of => Client
+  assert $client.count, :equals => 0
 end
 
 logger.info "Running process"
 begin
-  process_host.run
+
+  process_host.run do
+    $client = Client.new requests
+    $server = Server.new max_per_connection
+
+    add "http-client", $client
+    add "http-server", $server
+  end
+
 rescue StopIteration
   time = Time.now - t0
 

@@ -1,6 +1,6 @@
 # ProcessHost
 
-Lightweight process host for single threaded, input bound processes. Ideal for TCP services (including HTTP), message buses, log readers, or pub/sub subscribers -- basically, any process that is *reading* on a socket when it is not processing work.
+Lightweight process host for single threaded, input bound processes. Ideal for TCP services (including HTTP), message buses, log readers, or pub/sub subscribers -- basically, any process that waits around for a socket to supply work.
 
 ## Why?
 
@@ -10,21 +10,34 @@ Currently, if you want to run, say, an http server *and* a background job proces
 
 ProcessHost uses `IO.select` under the hood to tell the operating system to wake up ruby when any of the processes has data available to read on their sockets. This means each process must expose the underlying socket is reads from to ProcessHost. For instance, if you're writing a web server, this means you'll want to expose the client sockets that are accepting incoming HTTP requests. This is all done through a small API contract between your process and ProcessHost.
 
-In order to make your process available to be hosted, just implement a few methods: `connect`, `receive_socket`, and possibly `prepare_socket`:
+In order to make your process available to be hosted, just implement to methods: `#connect` and `#next!`.
 
-| Method name      | Arguments | Purpose                                                         |
-| ---------------- | --------- | --------------------------------------------------------------- |
-| `connect`        | None      | Returns a new socket that ProcessHost can pass to `IO.select`   |
-| `prepare_socket` | `socket`  | Takes any action necessary to set up the socket for reading     |
-| `receive_socket` | `socket`  | Called by ProcessHost when your socket is ready to be read from |
+##### #connect
 
-At times you will need to recycle your connections -- for instance, when an HTTP server sends back a `Connection: close` header in a response. If you call `#close` on your socket at any time during your `receive_socket` callback, ProcessHost will detect that the socket has been closed and invoke `#connect` to establish a new socket. If you do not call `#close`, your socket will be reused.
+The `#connect` method will get passed an object, named `io` in subsequent examples, and your responsibility is to invoke `#connect` *back* on `io` passing in a socket. If that sounds confusing, here is an example:
+
+```ruby
+class MyProcess
+  def self.connect io
+    socket = TCPSocket.new "localhost", 9999
+    io.connect socket
+  end
+end
+```
+
+Basically, inside your `#connect` method, you'll want to establish an actual socket connection to something, and pass that back to the `io` argument you receive. If your connection raises an `Errno::ECONNREFUSED` error, ProcessHost will rescue that error and try again later.
+
+##### #next!
+
+When your process instance has given the `io` a connection, ProcessHost will then start calling `#next!`, indicating it's time for your process to find work to do and process it. The `io` object passed in actually implements a few "blocking" I/O methods: `gets`, `puts`, `read`, and `write`. Behind the scenes, ProcessHost suspends your process and resumes it once the socket is be ready for reading or writing. To achieve this, ProcessHost actually runs your process in a fiber.
+
+At times you will need to recycle your connections -- for instance, when an HTTP server sends back a `Connection: close` header in a response. If you call `#close` on your socket at any time during your `next!` method, ProcessHost will detect that the socket has been closed and invoke `#connect` to establish a new socket. If you do not call `#close`, your socket will be reused.
 
 Take a look at `tests/http_end_to_end.rb` for a demonstration of an HTTP server and client operating asynchronously with no threads, fibers, or forked subprocesses.
 
-## Heartbeats
+## Watchdog
 
-ProcessHost will keep a heartbeat updated internally each time it swaps between processes. This ensures that ProcessHost can detect when a single process hangs. Of course, when a single process hangs, ProcessHost is also hung, which means it can't repair itself. However, you can "kick" ProcessHost by sending a `USR1` signal, which will terminate the process if and only if the last heartbeat timestamp is sufficiently old.
+ProcessHost can keep a heartbeat updated internally each time it swaps between processes. This ensures that ProcessHost can detect when a single process hangs. Simply set `watchdog_timeout` in your configuration block to activate the watchdog (more that below). This watchdog gets reset automatically between each iteration of the main polling loop.
 
 ## Error handling
 
@@ -51,9 +64,10 @@ process_host = ProcessHost.build do |config|
   # every 50ms.
   config.poll_period_ms = 50
 
-  # If the last heartbeat is over 12 seconds old, any USR1 signal will cause
-  # the process host to die, killing all the processes with it.
-  config.heartbeat_threshold_ms = 12000
+  # Activate the watchdog and configure it to kill the host and processes if
+  # a single round trip through the main loop takes longer than the configured
+  # threshold of 12 seconds.
+  config.watchdog_timeout = 12
 
   # Deliver a message to your sysadmin's pager
   config.exception_notifier = -> process, error do
@@ -61,10 +75,9 @@ process_host = ProcessHost.build do |config|
   end
 end
 
-# Adds processes to the host
-process_host.add MyWebApplication.new
-process_host.add MyWorker.new
-
-# This will take over the current process
-process_host.run
+# Runs the host, taking over the current process
+process_host.run do
+  add MyWebApplication.new
+  add MyWorker.new
+end
 ```

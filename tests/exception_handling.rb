@@ -10,7 +10,7 @@ class CantConnect
     end
   end
 
-  def connect
+  def connect io
     raise Error
   end
 end
@@ -26,11 +26,11 @@ class ErrorsDuringOperation
     @socket = socket
   end
 
-  def connect
-    @socket
+  def connect io
+    io.connect @socket
   end
 
-  def receive_socket socket
+  def next! io
     raise Error
   end
 end
@@ -38,14 +38,15 @@ end
 errors = {}
 
 builder = ProcessHost::Builder.new
-builder.exception_notifier = -> process, error do
-  errors[process.class.name] = error.to_s
+builder.exception_notifier = -> client, error do
+  errors[client.class.name] = error.to_s
 end
 
 host = builder.()
-host.add CantConnect.new
 begin
-  host.run
+  host.run do
+    add "cant-connect", CantConnect.new
+  end
 rescue CantConnect::Error => error
 end
 
@@ -53,9 +54,10 @@ rd, wr = UNIXSocket.pair
 wr.write "data"
 
 host = builder.()
-host.add ErrorsDuringOperation.new rd
 begin
-  host.run
+  host.run do
+    add "errors-during-operation", ErrorsDuringOperation.new(rd)
+  end
 rescue ErrorsDuringOperation::Error => error
 end
 

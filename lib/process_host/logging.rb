@@ -1,4 +1,4 @@
-class ProcessHost
+module ProcessHost
   module Logging
     attr_writer :logger
 
