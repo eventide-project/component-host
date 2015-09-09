@@ -2,11 +2,12 @@ module ProcessHost
   class IOWrapper
     autoload :DeferredAction, "process_host/io_wrapper/deferred_action"
 
+    attr_reader :host_fiber
     attr_reader :pending_action
     attr_reader :socket
 
-    def initialize client
-      @client = client
+    def initialize host_fiber
+      @host_fiber = host_fiber
       reset_pending_action
     end
 

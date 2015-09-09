@@ -3,22 +3,24 @@ module ProcessHost
     include Logging
 
     attr_reader :client
-    attr_reader :fiber
+    attr_reader :child_fiber
+    attr_reader :host_fiber
     attr_reader :name
 
     def initialize client, name = nil
       @client = client
       @name = name || client.class.name
+      @host_fiber = Fiber.current
     end
 
     def start
-      @fiber = Fiber.new do
+      @child_fiber = Fiber.new do
         next! while true
       end
     end
 
     def ensure_connected
-      fiber.resume unless connected?
+      child_fiber.resume unless connected?
     end
 
     def next!
@@ -27,6 +29,7 @@ module ProcessHost
       if connected?
         client.next! io_wrapper
       else
+        logger.info "Resuming control back to host"
         Fiber.yield
       end
 
@@ -36,13 +39,17 @@ module ProcessHost
     end
 
     def resume
+      unless Fiber.current == host_fiber
+        fail "not in host fiber"
+      end
+
       return_value = io_wrapper.complete_pending_action
       logger.debug "Process #{name.inspect} finished action; returned #{return_value.inspect}"
-      fiber.resume return_value
+      child_fiber.resume return_value
     end
 
     def io_wrapper
-      @io_wrapper ||= IOWrapper.new client
+      @io_wrapper ||= IOWrapper.new host_fiber
     end
 
     def connect!
