@@ -5,8 +5,7 @@ require "socket"
 
 class Server
   def connect io
-    socket = TCPSocket.new "127.0.0.1", 90210
-    io.connect socket
+    TCPSocket.new "127.0.0.1", 90210
   end
 
   def start io

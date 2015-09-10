@@ -14,13 +14,12 @@ In order to make your process available to be hosted, just implement to methods:
 
 ##### #connect
 
-The `#connect` method will get passed an object, named `io` in subsequent examples, and your responsibility is to invoke `#connect` *back* on `io` passing in a socket. If that sounds confusing, here is an example:
+The `#connect` method will get passed an object, named `io` in subsequent examples, and your responsibility is to pass in a socket on `io` via assignment. If that sounds confusing, here is an example:
 
 ```ruby
 class MyProcess
   def self.connect io
-    socket = TCPSocket.new "localhost", 9999
-    io.connect socket
+    io.socket = TCPSocket.new "localhost", 9999
   end
 end
 ```

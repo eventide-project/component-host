@@ -12,12 +12,16 @@ module ProcessHost
       reset_pending_action
     end
 
-    def connect socket
+    def socket= socket
       @socket = socket if socket
     end
 
     def close
       socket.close
+    end
+
+    def closed?
+      socket.closed?
     end
 
     def gets *args

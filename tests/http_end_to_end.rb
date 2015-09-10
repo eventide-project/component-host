@@ -15,7 +15,7 @@ class Server
   end
 
   def connect io
-    io.connect tcp_server.accept_nonblock
+    io.socket = tcp_server.accept_nonblock
   rescue IO::WaitReadable, Errno::EINTR
   end
 
@@ -79,8 +79,7 @@ class Client
   end
 
   def connect io
-    socket = TCPSocket.new "127.0.0.1", 9999
-    io.connect socket
+    io.socket = TCPSocket.new "127.0.0.1", 9999
   end
 
   def start io

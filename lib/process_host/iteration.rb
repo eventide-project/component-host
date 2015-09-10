@@ -59,8 +59,8 @@ module ProcessHost
     def select_sockets
       readable, writeable, _ = IO.select read_sockets, write_sockets, [], poll_period
       sockets = Array(readable) + Array(writeable)
-    ensure
       logger.debug "Select found #{sockets.size} sockets ready to use"
+      sockets
     end
   end
 end
