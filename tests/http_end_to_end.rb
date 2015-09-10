@@ -19,36 +19,41 @@ class Server
   rescue IO::WaitReadable, Errno::EINTR
   end
 
-  def next! io
-    builder = HTTP::Protocol::Request.builder
-    builder << io.gets until builder.finished_headers?
+  def start io
+    loop do
+      builder = HTTP::Protocol::Request.builder
+      builder << io.gets until builder.finished_headers?
 
-    request = builder.message
+      request = builder.message
 
-    path = request.path
-    match = path.match %r{^/test-pattern/(?<count>\d+)$}
+      path = request.path
+      match = path.match %r{^/test-pattern/(?<count>\d+)$}
 
-    count = match.to_a.fetch 1
+      count = match.to_a.fetch 1
+      new_count = count.to_i - 1
 
-    data = "#{count.to_i - 1}\r\n"
-    response = HTTP::Protocol::Response.new 200, "OK"
-    response["Content-Length"] = data.size
+      data = "#{new_count}\r\n"
+      response = HTTP::Protocol::Response.new 200, "OK"
+      response["Content-Length"] = data.size
 
-    conn_count = consume_use
-    close_connection = conn_count.zero?
+      conn_count = consume_use
+      close_connection = conn_count.zero?
 
-    if close_connection
-      response["Connection"] = "close"
-    else
-      response["Connection"] = "keep-alive"
-      response["Keep-Alive"] = "max=#{conn_count},timeout=120"
+      if close_connection
+        response["Connection"] = "close"
+      else
+        response["Connection"] = "keep-alive"
+        response["Keep-Alive"] = "max=#{conn_count},timeout=120"
+      end
+
+      response.to_s.each_line do |line|
+        io.puts line
+      end
+      io.write data
+      io.close if close_connection
+
+      raise StopIteration if new_count.zero?
     end
-
-    response.to_s.each_line do |line|
-      io.puts line
-    end
-    io.write data
-    io.close if close_connection
   end
 
   private
@@ -78,23 +83,25 @@ class Client
     io.connect socket
   end
 
-  def next! io
-    request = HTTP::Protocol::Request.new "GET", "/test-pattern/#{count}"
-    request["Host"] = "localhost"
-    io.write request
+  def start io
+    loop do
+      request = HTTP::Protocol::Request.new "GET", "/test-pattern/#{count}"
+      request["Host"] = "localhost"
+      io.write request
 
-    builder = HTTP::Protocol::Response.builder
-    builder << io.gets until builder.finished_headers?
+      builder = HTTP::Protocol::Response.builder
+      builder << io.gets until builder.finished_headers?
 
-    response = builder.message
-    content_length = response["Content-Length"].to_i
+      response = builder.message
+      content_length = response["Content-Length"].to_i
 
-    data = io.read content_length
-    @count = data.to_i
-    logger.info do "Count is now #{count}; Connection=#{response["Connection"]}" end
-    io.close if response["Connection"] == "close"
+      data = io.read content_length
+      @count = data.to_i
+      logger.info do "Count is now #{count}; Connection=#{response["Connection"]}" end
+      io.close if response["Connection"] == "close"
 
-    raise StopIteration if count.zero?
+      raise StopIteration if count.zero?
+    end
   end
 end
 

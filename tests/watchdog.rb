@@ -3,7 +3,7 @@ require "process_host"
 require "timeout"
 
 class HungProcess
-  def connect io
+  def start io
     sleep 0.01 while true
   end
 end

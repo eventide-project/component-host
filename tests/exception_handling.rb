@@ -13,6 +13,11 @@ class CantConnect
   def connect io
     raise Error
   end
+
+  def start io
+    io.puts "some-string"
+    fail "should not get here"
+  end
 end
 
 class ErrorsDuringOperation
@@ -22,15 +27,7 @@ class ErrorsDuringOperation
     end
   end
 
-  def initialize socket
-    @socket = socket
-  end
-
-  def connect io
-    io.connect @socket
-  end
-
-  def next! io
+  def start io
     raise Error
   end
 end
@@ -50,13 +47,10 @@ begin
 rescue CantConnect::Error => error
 end
 
-rd, wr = UNIXSocket.pair
-wr.write "data"
-
 host = builder.()
 begin
   host.run do
-    add "errors-during-operation", ErrorsDuringOperation.new(rd)
+    add "errors-during-operation", ErrorsDuringOperation.new
   end
 rescue ErrorsDuringOperation::Error => error
 end

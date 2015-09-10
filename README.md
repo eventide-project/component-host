@@ -10,7 +10,7 @@ Currently, if you want to run, say, an http server *and* a background job proces
 
 ProcessHost uses `IO.select` under the hood to tell the operating system to wake up ruby when any of the processes has data available to read on their sockets. This means each process must expose the underlying socket is reads from to ProcessHost. For instance, if you're writing a web server, this means you'll want to expose the client sockets that are accepting incoming HTTP requests. This is all done through a small API contract between your process and ProcessHost.
 
-In order to make your process available to be hosted, just implement to methods: `#connect` and `#next!`.
+In order to make your process available to be hosted, just implement to methods: `#connect` and `#start`.
 
 ##### #connect
 
@@ -27,11 +27,11 @@ end
 
 Basically, inside your `#connect` method, you'll want to establish an actual socket connection to something, and pass that back to the `io` argument you receive. If your connection raises an `Errno::ECONNREFUSED` error, ProcessHost will rescue that error and try again later.
 
-##### #next!
+##### #start
 
-When your process instance has given the `io` a connection, ProcessHost will then start calling `#next!`, indicating it's time for your process to find work to do and process it. The `io` object passed in actually implements a few "blocking" I/O methods: `gets`, `puts`, `read`, and `write`. Behind the scenes, ProcessHost suspends your process and resumes it once the socket is be ready for reading or writing. To achieve this, ProcessHost actually runs your process in a fiber.
+When your process instance has given the `io` a connection, ProcessHost will then spawn a Fiber and invoke `#start` inside of it. The `io` object passed in actually implements a few "blocking" I/O methods: `gets`, `puts`, `read`, and `write`. Behind the scenes, ProcessHost suspends your process and resumes it once the socket is be ready for reading or writing.
 
-At times you will need to recycle your connections -- for instance, when an HTTP server sends back a `Connection: close` header in a response. If you call `#close` on your socket at any time during your `next!` method, ProcessHost will detect that the socket has been closed and invoke `#connect` to establish a new socket. If you do not call `#close`, your socket will be reused.
+At times you will need to recycle your sockets -- for instance, when an HTTP server sends back a `Connection: close` header in a response. If you call `#close` on your socket at any time during your `start` method, ProcessHost will detect that the socket has been closed and invoke `#connect` to establish a new socket. If you do not call `#close`, your socket will be reused. The very first time your `#start` method requests IO access, `#connect` will be used to setup an initial connection.
 
 Take a look at `tests/http_end_to_end.rb` for a demonstration of an HTTP server and client operating asynchronously with no threads, fibers, or forked subprocesses.
 

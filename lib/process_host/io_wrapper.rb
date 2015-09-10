@@ -8,32 +8,32 @@ module ProcessHost
 
     def initialize host_fiber
       @host_fiber = host_fiber
+      @socket = NullSocket
       reset_pending_action
     end
 
     def connect socket
-      @socket = socket
+      @socket = socket if socket
     end
 
     def close
       socket.close
-      @socket = nil
     end
 
     def gets *args
-      defer DeferredAction::Gets.new(args, socket)
+      defer DeferredAction::Gets.new(args, self)
     end
 
     def puts *args
-      defer DeferredAction::Puts.new(args, socket)
+      defer DeferredAction::Puts.new(args, self)
     end
 
     def read *args
-      defer DeferredAction::Read.new(args, socket)
+      defer DeferredAction::Read.new(args, self)
     end
 
     def write *args
-      defer DeferredAction::Write.new(args, socket)
+      defer DeferredAction::Write.new(args, self)
     end
 
     def pending_read?
@@ -64,6 +64,12 @@ module ProcessHost
     def defer action
       self.pending_action = action
       Fiber.yield
+    end
+
+    module NullSocket
+      def self.closed?
+        true
+      end
     end
 
     class ActionAssigned < StandardError

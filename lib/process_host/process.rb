@@ -15,27 +15,14 @@ module ProcessHost
 
     def start
       @child_fiber = Fiber.new do
-        next! while true
+        start_client
       end
     end
 
-    def ensure_connected
-      child_fiber.resume unless connected?
-    end
-
-    def next!
-      connect! unless connected?
-
-      if connected?
-        client.next! io_wrapper
-      else
-        logger.info "Resuming control back to host"
-        Fiber.yield
+    def start_client
+      invoke_client do
+        client.start io_wrapper
       end
-
-    rescue => error
-      crash =  Crash.new client, error
-      raise crash
     end
 
     def resume
@@ -53,12 +40,12 @@ module ProcessHost
     end
 
     def connect!
-      client.connect io_wrapper
-    rescue Errno::ECONNREFUSED
-    end
-
-    def connected?
-      if io_wrapper.socket then true else false end
+      invoke_client do
+        begin
+          client.connect io_wrapper
+        rescue Errno::ECONNREFUSED
+        end
+      end
     end
 
     def pending_read?
@@ -70,7 +57,15 @@ module ProcessHost
     end
 
     def socket
+      connect! if io_wrapper.socket.closed?
       io_wrapper.socket
+    end
+
+    def invoke_client
+      yield
+    rescue => error
+      crash = Crash.new client, error
+      raise crash
     end
 
     class Crash < StandardError

@@ -9,8 +9,9 @@ class Server
     io.connect socket
   end
 
-  def next! io
-    fail "Should not even try"
+  def start io
+    io.puts "some-string"
+    fail "should never get here"
   end
 end
 

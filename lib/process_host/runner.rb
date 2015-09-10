@@ -19,10 +19,16 @@ module ProcessHost
 
     def call iteration_count
       logger.debug "Started runner with #{processes.size} processes: #{process_names * ", "}"
+      processes.each &:resume
 
       while iteration_count > 0
         next!
         iteration_count -= 1
+
+        if processes.empty?
+          logger.warn "Processes all exited; runner is terminating"
+          return
+        end
       end
     end
 

@@ -16,16 +16,24 @@ module ProcessHost
 
     def call
       logger.debug "Started iteration"
-      ensure_processes_are_connected
       setup_sockets_for_select
       noop and return if noop?
       resume_processes_ready_for_io
+      reap_processes
+    end
+
+    def reap_processes
+      processes.delete_if do |process|
+        not process.child_fiber.alive?
+      end
     end
 
     def setup_sockets_for_select
       processes.each do |process|
-        read_sockets << process.socket if process.pending_read?
-        write_sockets << process.socket if process.pending_write?
+        socket = process.socket
+        next if socket.closed?
+        read_sockets << socket if process.pending_read?
+        write_sockets << socket if process.pending_write?
       end
     end
 
@@ -37,12 +45,6 @@ module ProcessHost
       logger.debug "There are no sockets to select on; sleeping"
       sleep poll_period
       true
-    end
-
-    def ensure_processes_are_connected
-      processes.each do |process|
-        process.ensure_connected
-      end
     end
 
     def resume_processes_ready_for_io

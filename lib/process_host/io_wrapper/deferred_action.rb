@@ -3,13 +3,12 @@ module ProcessHost
     class DeferredAction
       attr_reader :arguments
       attr_reader :fiber
-      attr_reader :socket
+      attr_reader :io_wrapper
 
-      def initialize args, socket, fiber = Fiber.current
+      def initialize args, io_wrapper, fiber = Fiber.current
         @arguments = args
         @fiber = fiber
-        @ready = false
-        @socket = socket or fail "socket can't be nil"
+        @io_wrapper = io_wrapper
       end
 
       def read?
@@ -20,8 +19,15 @@ module ProcessHost
         false
       end
 
+      def socket
+        io_wrapper.socket
+      end
+
       module NoAction
         extend self
+
+        def perform
+        end
 
         def finished?
           false
