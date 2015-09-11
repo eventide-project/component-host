@@ -10,7 +10,7 @@ class CantConnect
     end
   end
 
-  def connect io
+  def connect
     raise Error
   end
 

@@ -42,7 +42,9 @@ module ProcessHost
     def connect!
       invoke_client do
         begin
-          client.connect io_wrapper
+          client.connect do |socket|
+            io_wrapper.socket = socket
+          end
         rescue Errno::ECONNREFUSED
         end
       end

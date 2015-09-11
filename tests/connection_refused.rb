@@ -4,8 +4,9 @@ require "process_host"
 require "socket"
 
 class Server
-  def connect io
-    TCPSocket.new "127.0.0.1", 90210
+  def connect
+    socket = TCPSocket.new "127.0.0.1", 90210
+    yield socket
   end
 
   def start io

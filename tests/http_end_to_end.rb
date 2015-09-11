@@ -14,8 +14,8 @@ class Server
     @max_per_connection = max_per_connection
   end
 
-  def connect io
-    io.socket = tcp_server.accept_nonblock
+  def connect
+    yield tcp_server.accept_nonblock
   rescue IO::WaitReadable, Errno::EINTR
   end
 
@@ -78,8 +78,9 @@ class Client
     @count = count
   end
 
-  def connect io
-    io.socket = TCPSocket.new "127.0.0.1", 9999
+  def connect
+    socket = TCPSocket.new "127.0.0.1", 9999
+    yield socket
   end
 
   def start io

@@ -14,17 +14,18 @@ In order to make your process available to be hosted, just implement to methods:
 
 ##### #connect
 
-The `#connect` method will get passed an object, named `io` in subsequent examples, and your responsibility is to pass in a socket on `io` via assignment. If that sounds confusing, here is an example:
+The `#connect` method will be invoked by ProcessHost whenever it needs a socket. Your responsibility is to yield a socket to the caller. If that sounds confusing, here is an example:
 
 ```ruby
 class MyProcess
-  def self.connect io
-    io.socket = TCPSocket.new "localhost", 9999
+  def self.connect
+    socket = TCPSocket.new "localhost", 9999
+    yield socket if block_given?
   end
 end
 ```
 
-Basically, inside your `#connect` method, you'll want to establish an actual socket connection to something, and pass that back to the `io` argument you receive. If your connection raises an `Errno::ECONNREFUSED` error, ProcessHost will rescue that error and try again later.
+Basically, inside your `#connect` method, you'll want to establish an actual socket connection to something, and pass that back to ProcessHost through `yield`. If your connection raises an `Errno::ECONNREFUSED` error, ProcessHost will rescue that error and try again later.
 
 ##### #start
 

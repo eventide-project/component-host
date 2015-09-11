@@ -50,8 +50,6 @@ module ProcessHost
 
     def complete_pending_action
       pending_action.perform
-    rescue => error
-      return error
     ensure
       reset_pending_action
     end
@@ -69,9 +67,7 @@ module ProcessHost
 
     def defer action
       self.pending_action = action
-      result = Fiber.yield
-      raise result if result.is_a? StandardError
-      result
+      Fiber.yield
     end
 
     module NullSocket
