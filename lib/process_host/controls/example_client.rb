@@ -16,9 +16,7 @@ class ProcessHost
         instance
       end
 
-      def run(&blk)
-        blk.(connection) if block_given?
-
+      def start
         while count > 0
           request = HTTP::Protocol::Request.new "GET", "/test-pattern/#{count}"
           request["Host"] = "localhost"
@@ -49,6 +47,13 @@ class ProcessHost
 
       def connection
         @connection ||= Connection::Client.build "127.0.0.1", 90210
+      end
+
+      module Process
+        def run(&blk)
+          blk.(connection)
+          start
+        end
       end
     end
   end

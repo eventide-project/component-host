@@ -17,9 +17,7 @@ class ProcessHost
         instance
       end
 
-      def run(&blk)
-        blk.(server_connection) if block_given?
-
+      def start
         loop do
           builder = ::HTTP::Protocol::Request.builder
           logger.trace "Server is reading request headers"
@@ -83,6 +81,13 @@ class ProcessHost
         return connections
       ensure
         @connections = max_per_connection if connections.zero?
+      end
+
+      module Process
+        def run(&blk)
+          blk.(server_connection)
+          start
+        end
       end
     end
   end
