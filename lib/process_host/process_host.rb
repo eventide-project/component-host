@@ -24,7 +24,7 @@ class ProcessHost
     reactor.register process
   end
 
-  def run
+  def start
     reactor.run do |process, error|
       exception_notifier.(process, error)
     end

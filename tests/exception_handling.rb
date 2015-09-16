@@ -24,7 +24,7 @@ process_host.exception_notifier = -> process, error do
 end
 
 begin
-  process_host.run
+  process_host.start
 rescue RaisesError::Error
 end
 

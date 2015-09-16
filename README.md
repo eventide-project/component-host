@@ -12,13 +12,20 @@ Here is a rough sketch of what a client process looks like:
 
 ```ruby
 class SomeClient
-  def run
-    connection = Connection::Client.build "127.0.0.1", 2113
-    yield connection
-
+  def start
     loop do
-      # iterate, using connection variable for IO access
+      # iterate, using `connection` for IO access
     end
+  end
+
+  # This will be invoked by ProcessHost in order to enable cooperative
+  # multitasking.
+  def change_connection_policy(policy)
+    connection.policy = policy
+  end
+
+  def connection
+    @connection ||= Connection::Client.build "127.0.0.1", 2113
   end
 end
 ```
@@ -27,13 +34,22 @@ A server:
 
 ```ruby
 class SomeServer
-  def run
-    server_connection = Connection::Server.build "127.0.0.1", 2113
-    yield server_connection
-
-    server_connection.accept do |client_connection|
-      # Fulfill the request using client_connection for IO access
+  def start
+    loop do
+      server_connection.accept do |client_connection|
+        # Fulfill the request using client_connection for IO access
+      end
     end
+  end
+
+  # This will be invoked by ProcessHost in order to enable cooperative
+  # multitasking.
+  def change_connection_policy(policy)
+    server_connection.policy = policy
+  end
+
+  def server_connection
+    @server_connection ||= Connection::Server.build "127.0.0.1", 2113
   end
 end
 ```
