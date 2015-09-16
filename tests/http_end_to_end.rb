@@ -1,16 +1,14 @@
 require_relative "./tests_init"
 
-# Test iterates n times
-requests = 100
-# Persist connections n times before closing connection
-max_per_connection = 50
-
 process_host = ProcessHost.build
 
 t0 = Time.now
 
-client = ProcessHost::Controls::ExampleClient.build requests
-server = ProcessHost::Controls::ExampleServer.build max_per_connection
+client = ProcessHost::Controls::ExampleClient.build
+requests = client.count
+client.logger = logger
+server = ProcessHost::Controls::ExampleServer.build
+server.logger = logger
 
 process_host.register server
 process_host.register client

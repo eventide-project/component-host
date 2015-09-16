@@ -10,8 +10,9 @@ class ProcessHost
         @count = count
       end
 
-      def self.build(count)
-        instance = new count
+      def self.build
+        count = ENV["EXAMPLE_CLIENT_COUNT"] || "5"
+        instance = new count.to_i
         Telemetry::Logger.configure instance
         instance
       end
