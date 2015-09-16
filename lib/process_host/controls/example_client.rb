@@ -50,10 +50,9 @@ class ProcessHost
         @connection ||= Connection::Client.build "127.0.0.1", 90210
       end
 
-      module Process
-        def run(&blk)
-          blk.(connection)
-          start
+      module ProcessHostIntegration
+        def change_connection_policy(policy)
+          connection.policy = policy
         end
       end
     end

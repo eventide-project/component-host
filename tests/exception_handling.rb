@@ -7,8 +7,11 @@ module RaisesError
     end
   end
 
-  def self.run
+  def self.start
     raise Error
+  end
+
+  def self.change_connection_policy(*)
   end
 end
 

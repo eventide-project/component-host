@@ -17,7 +17,9 @@ class ProcessHost
       end
 
       def start
-        loop do
+        running = true
+
+        while running
           server_connection.accept do |client_connection|
             keepalive_max.times.to_a.reverse.each do |keepalive_left|
               builder = ::HTTP::Protocol::Request.builder
@@ -60,6 +62,11 @@ class ProcessHost
                 client_connection.close
                 logger.debug "Server has reset client connection"
               end
+
+              if new_count == 0
+                break
+                running = false
+              end
             end
           end
         end
@@ -69,10 +76,9 @@ class ProcessHost
         @server_connection ||= Connection::Server.build "127.0.0.1", 90210
       end
 
-      module Process
-        def run(&blk)
-          blk.(server_connection)
-          start
+      module ProcessHostIntegration
+        def change_connection_policy(policy)
+          server_connection.policy = policy
         end
       end
     end

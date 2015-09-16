@@ -20,8 +20,7 @@ class ProcessHost
   end
 
   def register(process)
-    validate process
-
+    integrate process
     reactor.register process
   end
 
@@ -31,16 +30,24 @@ class ProcessHost
     end
   end
 
-  def validate(process)
-    mod_name = "#{process.class}::Process"
+  def integrate(process)
+    mod_name = "#{process.class}::ProcessHostIntegration"
 
     if Object.const_defined? mod_name
       mod = Object.const_get mod_name
-      process.extend mod
+    else
+      mod = DefaultIntegration
+    end
+    process.extend mod
+  end
+
+  module DefaultIntegration
+    def start(*)
+      raise InvalidProcess.new self
     end
 
-    unless process.respond_to? :run
-      raise InvalidProcess.new process
+    def change_connection_policy(*)
+      raise InvalidProcess.new self
     end
   end
 
@@ -53,7 +60,7 @@ class ProcessHost
 
     def to_s
       <<-ERROR.chomp
-Process #{process} has no run method, nor does it have an embedded Process module that can be extended onto instances and implement run for those instances
+Process #{process.inspect} must implement a #start and a #change_connection_policy method
       ERROR
     end
   end
