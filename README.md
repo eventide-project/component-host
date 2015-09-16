@@ -5,3 +5,37 @@ Lightweight process host for single threaded, input bound processes. Ideal for T
 ## Why?
 
 Currently, if you want to run, say, an http server *and* a background job processor in the same ruby program, you have to use a full blown asynchronous I/O framework such as Celluloid or Event-Machine.  This changes your architecture fairly significantly.  If you just want to operate more than one process in the same ruby program, but still want to use blocking I/O for each of those processes, ProcessHost can help.
+
+## Usage
+
+Here is a rough sketch of what a client process looks like:
+
+```ruby
+class SomeClient
+  def run
+    connection = Connection::Client.build "127.0.0.1", 2113
+    yield connection
+
+    loop do
+      # iterate, using connection variable for IO access
+    end
+  end
+end
+```
+
+A server:
+
+```ruby
+class SomeServer
+  def run
+    server_connection = Connection::Server.build "127.0.0.1", 2113
+    yield server_connection
+
+    server_connection.accept do |client_connection|
+      # Fulfill the request using client_connection for IO access
+    end
+  end
+end
+```
+
+See `lib/process-host/controls/example-*` for usage examples.
