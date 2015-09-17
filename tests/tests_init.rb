@@ -1,3 +1,6 @@
+ENV["LOG_COLOR"] ||= "on"
+ENV["CONSOLE_DEVICE"] ||= "stdout"
+
 require_relative "../init"
 
 require "ftest/script"

@@ -1,4 +1,4 @@
-class ProcessHost
+module ProcessHost
   module Controls
     class ExampleServer
       attr_reader :keepalive_max

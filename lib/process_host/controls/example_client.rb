@@ -1,4 +1,4 @@
-class ProcessHost
+module ProcessHost
   module Controls
     class ExampleClient
       attr_reader :count

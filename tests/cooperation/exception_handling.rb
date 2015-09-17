@@ -1,4 +1,4 @@
-require_relative "./tests_init"
+require_relative "./cooperation_tests_init"
 
 module RaisesError
   class Error < StandardError
@@ -17,14 +17,14 @@ end
 
 errors = {}
 
-process_host = ProcessHost.build
-process_host.register RaisesError
-process_host.exception_notifier = -> process, error do
+cooperation = ProcessHost::Cooperation.build
+cooperation.register RaisesError
+cooperation.exception_notifier = -> process, error do
   errors[process.to_s] = error.to_s
 end
 
 begin
-  process_host.start
+  cooperation.start
 rescue RaisesError::Error
 end
 
