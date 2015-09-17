@@ -19,9 +19,9 @@ class ProcessHost
     @exception_notifier or ->*{}
   end
 
-  def register(process)
+  def register(process, name = nil)
     integrate process
-    reactor.register process
+    reactor.register process, name
   end
 
   def start
