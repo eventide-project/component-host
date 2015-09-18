@@ -22,7 +22,7 @@ module ProcessHost
         while running
           server_connection.accept do |client_connection|
             keepalive_max.times.to_a.reverse.each do |keepalive_left|
-              builder = ::HTTP::Protocol::Request.builder
+              builder = ::HTTP::Protocol::Request::Builder.build
               logger.trace "Server is reading request headers"
               builder << client_connection.gets until builder.finished_headers?
               logger.debug "Server has read request headers"

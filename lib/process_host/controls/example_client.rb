@@ -26,7 +26,7 @@ module ProcessHost
           connection.write request
           logger.debug "Client has written request headers"
 
-          builder = HTTP::Protocol::Response.builder
+          builder = HTTP::Protocol::Response::Builder.build
           logger.trace "Client is reading response headers"
           builder << connection.gets until builder.finished_headers?
           logger.debug "Client has read response headers"
