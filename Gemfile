@@ -2,8 +2,6 @@ source "https://rubygems.org"
 
 require "./prox_gem"
 
-gem 'ftest'
-
 prox_gem "attribute"
 prox_gem "clock"
 prox_gem "connection"
