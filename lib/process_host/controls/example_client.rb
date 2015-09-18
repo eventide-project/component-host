@@ -6,7 +6,7 @@ module ProcessHost
 
       dependency :logger, Telemetry::Logger
 
-      def initialize count
+      def initialize(count)
         @count = count
       end
 

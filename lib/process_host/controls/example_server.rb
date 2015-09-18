@@ -5,7 +5,7 @@ module ProcessHost
 
       dependency :logger, Telemetry::Logger
 
-      def initialize keepalive_max
+      def initialize(keepalive_max)
         @keepalive_max = keepalive_max
       end
 
