@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name        = "process-host"
+  s.name        = "process_host"
   s.version     = "0.1.0"
   s.licenses    = ["MIT"]
   s.summary     = "Run multiple logical processes inside a single physical process."
