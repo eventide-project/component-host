@@ -55,3 +55,7 @@ end
 ```
 
 See `lib/process-host/controls/example-*` for usage examples.
+
+## License
+
+The `process-host` library is released under the [MIT License](https://github.com/obsidian-btc/process-host/blob/master/MIT-License.txt).
