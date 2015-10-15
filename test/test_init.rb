@@ -6,6 +6,5 @@ puts RUBY_DESCRIPTION
 
 require_relative "../init"
 
-require "process_host"
 require "process_host/controls"
 require "runner"

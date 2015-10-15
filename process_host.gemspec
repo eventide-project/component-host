@@ -9,4 +9,7 @@ Gem::Specification.new do |s|
   s.files       = Dir["lib/**/*.rb"]
   s.homepage    = "https://github.com/obsidian-btc/process-host"
   s.executables = []
+
+  s.add_runtime_dependency 'telemetry-logger'
+  s.add_runtime_dependency 'connection'
 end
