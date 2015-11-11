@@ -7,4 +7,7 @@ puts RUBY_DESCRIPTION
 require_relative "../init"
 
 require "process_host/controls"
+
 require "runner"
+
+Telemetry::Logger::AdHoc.activate
