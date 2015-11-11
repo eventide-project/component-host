@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.authors = ['Obsidian Software, Inc']
   s.email = 'opensource@obsidianexchange.com'
-  s.homepage = 'https://github.com/obsidian-btc/virtual'
+  s.homepage = 'https://github.com/obsidian-btc/process-host'
   s.licenses = ['MIT']
 
   s.require_paths = ['lib']
