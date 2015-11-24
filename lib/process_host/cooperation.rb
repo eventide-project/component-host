@@ -16,8 +16,7 @@ module ProcessHost
       instance
     end
 
-    def register(process, name=nil)
-      name ||= 'unknown'
+    def register(process, name)
       ProcessHost.integrate process
       reactor.register process, name
     end

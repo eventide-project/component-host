@@ -32,8 +32,12 @@ module ProcessHost
         def next(&block)
           ready_reads, ready_writes = select
 
-          ready_reads.each { |deferral| deferral.callback.() }
-          ready_writes.each { |deferral| deferral.callback.() }
+          ready_reads.each do |deferral|
+            deferral.callback.()
+          end
+          ready_writes.each do |deferral|
+            deferral.callback.()
+          end
 
           cycle_deferrals
         end

@@ -19,9 +19,9 @@ describe 'Error handling' do
   errors = {}
 
   cooperation = ProcessHost::Cooperation.build
-  cooperation.register RaisesError
+  cooperation.register RaisesError, 'RaisesError'
   cooperation.exception_notifier = -> process, error do
-    errors[process.to_s] = error.to_s
+    errors[process] = error.to_s
   end
 
   begin
@@ -30,6 +30,7 @@ describe 'Error handling' do
   end
 
   specify 'Errors' do
+    __logger.data errors
     assert errors == { 'RaisesError' => 'raises-error' }
   end
 end

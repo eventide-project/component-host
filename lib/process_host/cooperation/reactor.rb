@@ -20,22 +20,47 @@ module ProcessHost
       def register(process, name)
         process.change_connection_scheduler scheduler
 
-        fibers[name] = Fiber.new do
-          process.start
-        end
+        fibers[name] = Process.new process
       end
 
       def scheduler
         @scheduler ||= Connection::Scheduler::Cooperative.build dispatcher
       end
 
-      def start
+      def start(&callback)
         fibers.each_value &:resume
 
         while fibers.any?
           logger.debug "Started Iteration (Fibers: #{fibers.keys * ', '})"
           dispatcher.next
-          fibers.select! { |_, fiber| fiber.alive? }
+          fibers.reject! do |name, process|
+            next unless process.finished?
+            callback.(name, process.error)
+            raise process.error if process.error
+            true
+          end
+        end
+      end
+
+      Process = Struct.new :process do
+        attr_accessor :error
+
+        def fiber
+          @fiber ||= Fiber.new do
+            begin
+              process.start
+            rescue => error
+              self.error = error
+            end
+          end
+        end
+
+        def finished?
+          !fiber.alive?
+        end
+
+        def resume
+          fiber.resume
         end
       end
 
