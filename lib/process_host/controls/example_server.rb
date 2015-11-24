@@ -20,65 +20,67 @@ module ProcessHost
         running = true
 
         while running
-          server_connection.accept do |client_connection|
-            keepalive_max.times.to_a.reverse.each do |keepalive_left|
-              builder = ::HTTP::Protocol::Request::Builder.build
-              logger.trace "Server is reading request headers"
-              builder << client_connection.gets until builder.finished_headers?
-              logger.debug "Server has read request headers"
+          logger.trace 'Server acceping client'
+          client_connection = server_connection.accept
+          logger.debug 'Server accepted client'
 
-              request = builder.message
-              logger.data "Request headers:\n#{request}"
+          keepalive_max.times.to_a.reverse.each do |keepalive_left|
+            builder = ::HTTP::Protocol::Request::Builder.build
+            logger.trace 'Server is reading request headers'
+            builder << client_connection.readline("\r\n") until builder.finished_headers?
+            logger.debug 'Server has read request headers'
 
-              path = request.path
-              match = path.match %r{^/test-pattern/(?<count>\d+)$}
+            request = builder.message
+            logger.data "Request headers:\n#{request}"
 
-              count = match.to_a.fetch 1
-              new_count = count.to_i - 1
+            path = request.path
+            match = path.match %r{^/test-pattern/(?<count>\d+)$}
 
-              data = "#{new_count}\r\n"
-              response = HTTP::Protocol::Response.new 200, "OK"
-              response["Content-Length"] = data.size
+            count = match.to_a.fetch 1
+            new_count = count.to_i - 1
 
-              if keepalive_left.zero?
-                response["Connection"] = "close"
-              else
-                response["Connection"] = "keep-alive"
-                response["Keep-Alive"] = "max=#{keepalive_left},timeout=120"
-              end
+            data = "#{new_count}\r\n"
+            response = HTTP::Protocol::Response.new 200, "OK"
+            response['Content-Length'] = data.size
 
-              logger.trace "Server is writing response headers"
-              logger.data "Response headers:\n#{response}"
-              response.to_s.each_line do |line|
-                client_connection.puts line
-              end
-              logger.debug "Server has written response headers"
-              logger.trace "Server is writing response body"
-              logger.data "Response body:\n#{data}"
-              client_connection.write data
-              logger.debug "Server has written response body"
+            if keepalive_left.zero?
+              response['Connection'] = 'close'
+            else
+              response['Connection'] = 'keep-alive'
+              response['Keep-Alive'] = "max=#{keepalive_left},timeout=120"
+            end
 
-              if keepalive_left.zero?
-                client_connection.close
-                logger.debug "Server has reset client connection"
-              end
+            logger.trace 'Server is writing response headers'
+            logger.data "Response headers:\n#{response}"
+            response.to_s.each_line do |line|
+              client_connection.write line
+            end
+            logger.debug 'Server has written response headers'
+            logger.trace 'Server is writing response body'
+            logger.data "Response body:\n#{data}"
+            client_connection.write data
+            logger.debug 'Server has written response body'
 
-              if new_count == 0
-                break
-                running = false
-              end
+            if keepalive_left.zero?
+              client_connection.close
+              logger.debug 'Server has reset client connection'
+            end
+
+            if new_count == 0
+              running = false
+              break
             end
           end
         end
       end
 
       def server_connection
-        @server_connection ||= Connection::Server.build "127.0.0.1", 90210
+        @server_connection ||= Connection.server 90210
       end
 
       module ProcessHostIntegration
-        def change_connection_policy(policy)
-          server_connection.policy = policy
+        def change_connection_scheduler(scheduler)
+          server_connection.scheduler = scheduler
         end
       end
     end

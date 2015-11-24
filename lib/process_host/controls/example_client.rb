@@ -23,12 +23,12 @@ module ProcessHost
           request["Host"] = "localhost"
           logger.trace "Client is writing request headers"
           logger.data "Request headers:\n#{request}"
-          connection.write request
+          connection.write request.to_s
           logger.debug "Client has written request headers"
 
           builder = HTTP::Protocol::Response::Builder.build
           logger.trace "Client is reading response headers"
-          builder << connection.gets until builder.finished_headers?
+          builder << connection.readline("\r\n") until builder.finished_headers?
           logger.debug "Client has read response headers"
 
           response = builder.message
@@ -47,12 +47,12 @@ module ProcessHost
       end
 
       def connection
-        @connection ||= Connection::Client.build "127.0.0.1", 90210
+        @connection ||= Connection.client '127.0.0.1', 90210
       end
 
       module ProcessHostIntegration
-        def change_connection_policy(policy)
-          connection.policy = policy
+        def change_connection_scheduler(scheduler)
+          connection.scheduler = scheduler
         end
       end
     end

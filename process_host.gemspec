@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'telemetry-logger'
   s.add_runtime_dependency 'connection'
-  s.add_runtime_dependency 'http-protocol'
 
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'minitest-spec-context'

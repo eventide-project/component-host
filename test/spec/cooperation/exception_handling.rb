@@ -1,9 +1,9 @@
-require_relative "./cooperation_tests_init"
+require_relative './cooperation_tests_init'
 
 module RaisesError
   class Error < StandardError
     def to_s
-      "raises-error"
+      'raises-error'
     end
   end
 
@@ -11,11 +11,11 @@ module RaisesError
     raise Error
   end
 
-  def self.change_connection_policy(*)
+  def self.change_connection_scheduler(*)
   end
 end
 
-describe "Error handling" do
+describe 'Error handling' do
   errors = {}
 
   cooperation = ProcessHost::Cooperation.build
@@ -29,7 +29,7 @@ describe "Error handling" do
   rescue RaisesError::Error
   end
 
-  specify "Errors" do
-    assert errors == { "RaisesError" => "raises-error" }
+  specify 'Errors' do
+    assert errors == { 'RaisesError' => 'raises-error' }
   end
 end
