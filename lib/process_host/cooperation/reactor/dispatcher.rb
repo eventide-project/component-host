@@ -34,9 +34,11 @@ module ProcessHost
 
           ready_reads.each do |deferral|
             deferral.callback.()
+            reads.delete deferral
           end
           ready_writes.each do |deferral|
             deferral.callback.()
+            writes.delete deferral
           end
 
           cycle_deferrals
@@ -70,13 +72,13 @@ module ProcessHost
           readable, * = IO.select [io], [], [], 0
           logger.debug "Deferring read (Fileno: #{io.fileno})"
           deferral = Deferral.new io, callback
-          reads << deferral unless pending_read io
+          reads << deferral
         end
 
         def wait_writable(io, &callback)
           logger.debug "Deferring write (Fileno: #{io.fileno})"
           deferral = Deferral.new io, callback
-          writes << deferral unless pending_write io
+          writes << deferral
         end
       end
     end
