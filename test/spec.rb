@@ -4,4 +4,4 @@ Runner.('spec/**/*.rb') do |exclude|
   exclude =~ /(_init.rb|\.scratch.rb|\.skip\.rb)\z/
 end
 
-Minitest.run
+Minitest.run ARGV or exit 1

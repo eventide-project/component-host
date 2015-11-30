@@ -15,7 +15,7 @@ module ProcessHost
       raise InvalidProcess.new self
     end
 
-    def change_connection_policy(*)
+    def change_connection_scheduler(*)
       raise InvalidProcess.new self
     end
   end
@@ -29,7 +29,7 @@ module ProcessHost
 
     def to_s
       <<-ERROR.chomp
-Process #{process.inspect} must implement a #start and a #change_connection_policy method
+Process #{process.inspect} must implement a #start and a #change_connection_scheduler method
       ERROR
     end
   end

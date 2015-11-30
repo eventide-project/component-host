@@ -20,12 +20,12 @@ class SomeClient
 
   # This will be invoked by ProcessHost in order to enable cooperative
   # multitasking.
-  def change_connection_policy(policy)
-    connection.policy = policy
+  def change_connection_scheduler(scheduler)
+    connection.scheduler = scheduler
   end
 
   def connection
-    @connection ||= Connection::Client.build "127.0.0.1", 2113
+    @connection ||= Connection.client "127.0.0.1", 2113
   end
 end
 ```
@@ -44,17 +44,15 @@ class SomeServer
 
   # This will be invoked by ProcessHost in order to enable cooperative
   # multitasking.
-  def change_connection_policy(policy)
-    server_connection.policy = policy
+  def change_connection_scheduler(scheduler)
+    server_connection.scheduler = scheduler
   end
 
   def server_connection
-    @server_connection ||= Connection::Server.build "127.0.0.1", 2113
+    @server_connection ||= Connection.server 2113
   end
 end
 ```
-
-See `lib/process-host/controls/example-*` for usage examples.
 
 ## License
 

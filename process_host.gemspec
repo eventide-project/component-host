@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "process_host"
-  s.version     = "0.1.2"
+  s.version     = "0.2.0"
   s.summary     = "Run multiple logical processes inside a single physical process."
   s.description = "Turns your ruby program into a long running process that your init system can manage."
 
@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'telemetry-logger'
   s.add_runtime_dependency 'connection'
-  s.add_runtime_dependency 'http-protocol'
 
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'minitest-spec-context'
