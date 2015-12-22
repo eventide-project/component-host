@@ -21,9 +21,19 @@ module ProcessHost
       reactor.register process, name
     end
 
-    def start
+    def start(&block)
       reactor.start do |process, error|
-        exception_notifier.(process, error) if exception_notifier
+        if error
+          exception_notifier.(process, error) if exception_notifier
+        else
+          block.(process) if block
+        end
+      end
+    end
+
+    def start!
+      start do |process|
+        fail "Process #{process.inspect} exited"
       end
     end
   end
