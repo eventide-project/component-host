@@ -47,7 +47,7 @@ module ProcessHost
       end
 
       def connection
-        @connection ||= Connection.client '127.0.0.1', 90210
+        @connection ||= Connection.client '127.0.0.1', 2000
       end
 
       module ProcessHostIntegration

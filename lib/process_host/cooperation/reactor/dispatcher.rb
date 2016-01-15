@@ -69,7 +69,6 @@ module ProcessHost
         end
 
         def wait_readable(io, &callback)
-          readable, * = IO.select [io], [], [], 0
           logger.debug "Deferring read (Fileno: #{io.fileno})"
           deferral = Deferral.new io, callback
           reads << deferral

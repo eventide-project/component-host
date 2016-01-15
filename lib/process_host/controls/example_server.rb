@@ -75,7 +75,7 @@ module ProcessHost
       end
 
       def server_connection
-        @server_connection ||= Connection.server 90210
+        @server_connection ||= Connection.server 2000
       end
 
       module ProcessHostIntegration
