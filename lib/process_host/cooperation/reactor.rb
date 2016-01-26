@@ -31,7 +31,7 @@ module ProcessHost
         fibers.each_value &:resume
 
         while fibers.any?
-          logger.debug "Started Iteration (Fibers: #{fibers.keys * ', '})"
+          logger.opt_debug "Started Iteration (Fibers: #{fibers.keys * ', '})"
           dispatcher.next
           fibers.reject! do |name, process|
             next unless process.finished?

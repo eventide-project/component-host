@@ -69,13 +69,13 @@ module ProcessHost
         end
 
         def wait_readable(io, &callback)
-          logger.debug "Deferring read (Fileno: #{io.fileno})"
+          logger.opt_debug "Deferring read (Fileno: #{io.fileno})"
           deferral = Deferral.new io, callback
           reads << deferral
         end
 
         def wait_writable(io, &callback)
-          logger.debug "Deferring write (Fileno: #{io.fileno})"
+          logger.opt_debug "Deferring write (Fileno: #{io.fileno})"
           deferral = Deferral.new io, callback
           writes << deferral
         end
