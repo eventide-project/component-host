@@ -1,4 +1,4 @@
-require_relative './cooperation_tests_init'
+require_relative './cooperation_spec_init'
 
 module RaisesError
   class Error < StandardError
@@ -15,7 +15,7 @@ module RaisesError
   end
 end
 
-describe 'Error handling' do
+context 'Error handling' do
   errors = {}
 
   cooperation = ProcessHost::Cooperation.build
@@ -29,7 +29,7 @@ describe 'Error handling' do
   rescue RaisesError::Error
   end
 
-  specify 'Errors' do
+  test 'Errors' do
     __logger.data errors
     assert errors == { 'RaisesError' => 'raises-error' }
   end

@@ -1,7 +1,6 @@
 require_relative 'test_init'
 
-Runner.('spec/**/*.rb') do |exclude|
-  exclude =~ /(_init.rb|\.scratch.rb|\.skip\.rb)\z/
-end
-
-Minitest.run ARGV or exit 1
+TestBench::Runner.(
+  'spec/**/*.rb',
+  exclude_pattern: %r{/skip\.|(?:_init\.rb|\.sketch\.rb|_sketch\.rb|\.skip\.rb)\z}
+) or exit 1

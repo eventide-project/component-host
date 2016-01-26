@@ -1,6 +1,6 @@
-require_relative "./cooperation_tests_init"
+require_relative "./cooperation_spec_init"
 
-describe "HTTP end to end" do
+context "HTTP end to end" do
   cooperation = ProcessHost::Cooperation.build
 
   t0 = Time.now
@@ -14,7 +14,7 @@ describe "HTTP end to end" do
 
   cooperation.start
 
-  specify "Client count" do
+  test "Client count" do
     assert client.count == 0
   end
 end

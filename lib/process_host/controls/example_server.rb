@@ -20,18 +20,18 @@ module ProcessHost
         running = true
 
         while running
-          logger.trace 'Server acceping client'
+          logger.opt_trace 'Server acceping client'
           client_connection = server_connection.accept
-          logger.debug 'Server accepted client'
+          logger.opt_debug 'Server accepted client'
 
           keepalive_max.times.to_a.reverse.each do |keepalive_left|
             builder = ::HTTP::Protocol::Request::Builder.build
-            logger.trace 'Server is reading request headers'
+            logger.opt_trace 'Server is reading request headers'
             builder << client_connection.readline("\r\n") until builder.finished_headers?
-            logger.debug 'Server has read request headers'
+            logger.opt_debug 'Server has read request headers'
 
             request = builder.message
-            logger.data "Request headers:\n#{request}"
+            logger.opt_data "Request headers:\n#{request}"
 
             path = request.path
             match = path.match %r{^/test-pattern/(?<count>\d+)$}
@@ -50,20 +50,20 @@ module ProcessHost
               response['Keep-Alive'] = "max=#{keepalive_left},timeout=120"
             end
 
-            logger.trace 'Server is writing response headers'
-            logger.data "Response headers:\n#{response}"
+            logger.opt_trace 'Server is writing response headers'
+            logger.opt_data "Response headers:\n#{response}"
             response.to_s.each_line do |line|
               client_connection.write line
             end
-            logger.debug 'Server has written response headers'
-            logger.trace 'Server is writing response body'
-            logger.data "Response body:\n#{data}"
+            logger.opt_debug 'Server has written response headers'
+            logger.opt_trace 'Server is writing response body'
+            logger.opt_data "Response body:\n#{data}"
             client_connection.write data
-            logger.debug 'Server has written response body'
+            logger.opt_debug 'Server has written response body'
 
             if keepalive_left.zero?
               client_connection.close
-              logger.debug 'Server has reset client connection'
+              logger.opt_debug 'Server has reset client connection'
             end
 
             if new_count == 0
