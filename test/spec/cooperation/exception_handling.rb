@@ -1,4 +1,4 @@
-require_relative './cooperation_tests_init'
+require_relative './cooperation_spec_init'
 
 module RaisesError
   class Error < StandardError
