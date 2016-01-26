@@ -1,3 +1,3 @@
 source ./library-symlinks.sh
 
-symlink_lib 'process-host'
+symlink_lib 'process_host'
