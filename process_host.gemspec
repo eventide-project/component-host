@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'process_host'
-  s.version     = '0.3.0'
+  s.version     = '0.0.3.1'
   s.summary     = 'Run multiple logical processes inside a single physical process.'
   s.description = 'Turns your ruby program into a long running process that your init system can manage.'
 
