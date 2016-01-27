@@ -1,4 +1,6 @@
-require 'connection'
+require 'connection/client'
+require 'connection/server'
+
 require 'telemetry/logger'
 
 require 'process_host/cooperation'
