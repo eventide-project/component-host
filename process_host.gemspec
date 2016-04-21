@@ -4,8 +4,8 @@ Gem::Specification.new do |s|
   s.summary     = 'Run multiple logical processes inside a single physical process.'
   s.description = 'Turns your ruby program into a long running process that your init system can manage.'
 
-  s.authors = ['Obsidian Software, Inc']
-  s.email = 'opensource@obsidianexchange.com'
+  s.authors = ['The Eventide Project']
+  s.email = 'opensource@eventide-project.org'
   s.homepage = 'https://github.com/obsidian-btc/process-host'
   s.licenses = ['MIT']
 
