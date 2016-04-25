@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
-  s.name        = 'process_host'
-  s.version     = '0.0.3.1'
-  s.summary     = 'Run multiple logical processes inside a single physical process.'
-  s.description = 'Turns your ruby program into a long running process that your init system can manage.'
+  s.name = 'process_host'
+  s.version = '0.1.0.0'
+  s.summary = 'Run multiple logical processes inside a single physical process'
+  s.description = ' '
 
   s.authors = ['The Eventide Project']
   s.email = 'opensource@eventide-project.org'
