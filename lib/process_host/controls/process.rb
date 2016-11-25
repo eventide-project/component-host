@@ -8,6 +8,8 @@ module ProcessHost
       class Example
         include ProcessHost::Process
 
+        process_name :example_process
+
         attr_accessor :started
 
         def start

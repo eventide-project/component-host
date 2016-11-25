@@ -14,6 +14,18 @@ module ProcessHost
 
     Virtual::PureMethod.define self, :start
 
+    module Start
+      def start
+        logger.trace { "Starting process (ProcessName: #{self.class.process_name})" }
+
+        super
+
+        logger.debug { "Process started (ProcessName: #{self.class.process_name})" }
+
+        AsyncInvocation::Incorrect
+      end
+    end
+
     module Build
       def build
         instance = new
