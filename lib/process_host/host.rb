@@ -2,6 +2,8 @@ module ProcessHost
   class Host
     include Log::Dependency
 
+    attr_writer :record_error_proc
+
     dependency :signal, Signal
     dependency :write, Actor::Messaging::Write
 
@@ -23,6 +25,10 @@ module ProcessHost
       logger.debug { "Process registered (ProcessClass: #{process_class}, Name: #{process_name.inspect})" }
 
       process_name
+    end
+
+    def record_error(&block)
+      self.record_error_proc = block
     end
 
     def start(&block)
@@ -53,10 +59,19 @@ module ProcessHost
 
         block.(supervisor) if block
       end
+
+    rescue => error
+      logger.fatal "Error raised; exiting process (ErrorClass: #{error.class.name}, Message: #{error.message.inspect})"
+      record_error_proc.(error)
+      raise error
     end
 
     def processes
       @processes ||= {}
+    end
+
+    def record_error_proc
+      @record_error_proc ||= proc { }
     end
 
     NameConflictError = Class.new StandardError
