@@ -1,5 +1,11 @@
 module ProcessHost
   module Signal
+    def self.configure(receiver, attr_name: nil)
+      attr_name ||= :signal
+
+      receiver.public_send "#{attr_name}=", ::Signal
+    end
+
     module Substitute
       def self.build
         Signal.new
