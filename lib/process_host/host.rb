@@ -18,6 +18,8 @@ module ProcessHost
       end
 
       logger.debug { "Process registered (ProcessClass: #{process_class}, Name: #{process_name.inspect})" }
+
+      process_name
     end
 
     def processes

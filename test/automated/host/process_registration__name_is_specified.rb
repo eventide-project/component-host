@@ -4,7 +4,11 @@ context "Process Is Registered With Host, Name Is Specified" do
   host = Host.new
   process_class = Controls::Process::Example
 
-  host.register process_class, :other_name
+  process_name = host.register process_class, :other_name
+
+  test "Specified process name is returned" do
+    assert process_name == :other_name
+  end
 
   test "Specified name is used to register process with host" do
     assert host do

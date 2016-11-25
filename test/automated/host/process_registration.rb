@@ -4,7 +4,11 @@ context "Process Is Registered With Host" do
   host = Host.new
   process_class = Controls::Process::Example
 
-  host.register process_class
+  return_value = host.register process_class
+
+  test "Process name of process class is returned" do
+    assert return_value == Controls::Process::Name.example
+  end
 
   test "Process is registered with host" do
     assert host do
