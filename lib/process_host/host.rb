@@ -2,6 +2,9 @@ module ProcessHost
   class Host
     include Log::Dependency
 
+    dependency :signal, Signal
+    dependency :write, Actor::Messaging::Write
+
     def register(process_class, process_name=nil)
       logger.trace { "Registering process (ProcessClass: #{process_class}, Name: #{process_name.inspect})" }
 
@@ -20,6 +23,36 @@ module ProcessHost
       logger.debug { "Process registered (ProcessClass: #{process_class}, Name: #{process_name.inspect})" }
 
       process_name
+    end
+
+    def start(&block)
+      Actor::Supervisor.start do |supervisor|
+        signal.trap 'TSTP' do
+          message = Actor::Messages::Suspend
+
+          write.(message, supervisor.address)
+
+          logger.info { "Handled TSTP signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+        end
+
+        signal.trap 'CONT' do
+          message = Actor::Messages::Resume
+
+          write.(message, supervisor.address)
+
+          logger.info { "Handled CONT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+        end
+
+        signal.trap 'INT' do
+          message = Actor::Messages::Shutdown
+
+          write.(message, supervisor.address)
+
+          logger.info { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+        end
+
+        block.(supervisor) if block
+      end
     end
 
     def processes
