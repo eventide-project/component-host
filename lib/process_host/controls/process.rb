@@ -5,10 +5,16 @@ module ProcessHost
         Example.new
       end
 
+      module Name
+        def self.example
+          :example_process
+        end
+      end
+
       class Example
         include ProcessHost::Process
 
-        process_name :example_process
+        process_name Name.example
 
         attr_accessor :started
 
