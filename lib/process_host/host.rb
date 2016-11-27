@@ -32,6 +32,8 @@ module ProcessHost
     end
 
     def start(&block)
+      started_processes = []
+
       Actor::Supervisor.start do |supervisor|
         signal.trap 'TSTP' do
           message = Actor::Messages::Suspend
@@ -57,8 +59,18 @@ module ProcessHost
           logger.info { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
+        processes.each_value do |process_class|
+          process = process_class.build
+
+          started_processes << process
+
+          process.start
+        end
+
         block.(supervisor) if block
       end
+
+      started_processes
 
     rescue => error
       logger.fatal "Error raised; exiting process (ErrorClass: #{error.class.name}, Message: #{error.message.inspect})"
