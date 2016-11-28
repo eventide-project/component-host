@@ -7,6 +7,13 @@ module ProcessHost
     dependency :signal, Signal
     dependency :write, Actor::Messaging::Write
 
+    def self.build
+      instance = new
+      Signal.configure instance
+      instance.write = Actor::Messaging::Write
+      instance
+    end
+
     def register(process_class, process_name=nil)
       logger.trace { "Registering process (ProcessClass: #{process_class}, Name: #{process_name.inspect})" }
 
