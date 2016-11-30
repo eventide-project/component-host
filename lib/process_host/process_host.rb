@@ -7,7 +7,7 @@ module ProcessHost
     host.instance_exec host, &block
 
     host.start do
-      logger.info "Started component: #{component_name}"
+      logger.info "Started component: #{component_name} (ProcessID: #{::Process.pid})"
     end
   end
 end
