@@ -12,20 +12,28 @@ module ProcessHost
           include ::Actor
           include ::Log::Dependency
 
+          attr_writer :counter
+
           handle :start do
             :print_heartbeat
           end
 
           handle :print_heartbeat do
-            logger.info "Heartbeat"
+            logger.info "Heartbeat (Counter: #{counter})"
 
-            :delay
+            :next
           end
 
-          handle :delay do
+          handle :next do
+            self.counter += 1
+
             sleep 1
 
             :print_heartbeat
+          end
+
+          def counter
+            @counter ||= 0
           end
         end
       end
