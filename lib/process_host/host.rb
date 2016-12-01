@@ -1,6 +1,6 @@
 module ProcessHost
   class Host
-    include Log::Dependency
+    include ::Log::Dependency
 
     attr_writer :record_error_proc
 
