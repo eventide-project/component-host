@@ -5,12 +5,12 @@ module ProcessHost
     attr_writer :record_error_proc
 
     dependency :signal, Signal
-    dependency :write, Actor::Messaging::Write
+    dependency :send, Actor::Messaging::Send
 
     def self.build
       instance = new
       Signal.configure instance
-      instance.write = Actor::Messaging::Write
+      instance.send = Actor::Messaging::Send
       instance
     end
 
@@ -45,7 +45,7 @@ module ProcessHost
         signal.trap 'TSTP' do
           message = Actor::Messages::Suspend
 
-          write.(message, supervisor.address)
+          send.(message, supervisor.address)
 
           logger.info { "Handled TSTP signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
@@ -53,7 +53,7 @@ module ProcessHost
         signal.trap 'CONT' do
           message = Actor::Messages::Resume
 
-          write.(message, supervisor.address)
+          send.(message, supervisor.address)
 
           logger.info { "Handled CONT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
@@ -61,7 +61,7 @@ module ProcessHost
         signal.trap 'INT' do
           message = Actor::Messages::Shutdown
 
-          write.(message, supervisor.address)
+          send.(message, supervisor.address)
 
           logger.info { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end

@@ -8,7 +8,7 @@ module ProcessHost
         extend ProcessName
         prepend Start
 
-        dependency :write, Actor::Messaging::Write
+        dependency :send, Actor::Messaging::Send
       end
     end
 
@@ -29,7 +29,7 @@ module ProcessHost
     module Build
       def build
         instance = new
-        instance.write = Actor::Messaging::Write.new
+        instance.send = Actor::Messaging::Send.new
         instance
       end
     end

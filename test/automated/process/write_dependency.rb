@@ -4,9 +4,9 @@ context "Process Write Dependency" do
   context "Process is instantiated" do
     process = Controls::Process::Example.new
 
-    test "Write dependency is set to substitute" do
-      assert process.write do
-        instance_of? Actor::Messaging::Write::Substitute
+    test "Send dependency is set to substitute" do
+      assert process.send do
+        instance_of? Actor::Messaging::Send::Substitute
       end
     end
   end
@@ -14,9 +14,9 @@ context "Process Write Dependency" do
   context "Process is configured" do
     process = Controls::Process::Example.build
 
-    test "Write dependency is configured" do
-      assert process.write do
-        instance_of? Actor::Messaging::Write
+    test "Send dependency is configured" do
+      assert process.send do
+        instance_of? Actor::Messaging::Send
       end
     end
   end

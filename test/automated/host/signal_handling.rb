@@ -13,8 +13,8 @@ context "Signal Handling" do
     host.signal.simulate_signal 'TSTP'
 
     test "Suspend message is sent to supervior" do
-      assert host.write do
-        written? :suspend, address: supervisor_address
+      assert host.send do
+        sent? :suspend, address: supervisor_address
       end
     end
   end
@@ -23,8 +23,8 @@ context "Signal Handling" do
     host.signal.simulate_signal 'CONT'
 
     test "Resume message is sent to supervior" do
-      assert host.write do
-        written? :resume, address: supervisor_address
+      assert host.send do
+        sent? :resume, address: supervisor_address
       end
     end
   end
@@ -33,8 +33,8 @@ context "Signal Handling" do
     host.signal.simulate_signal 'INT'
 
     test "Shutdown message is sent to supervior" do
-      assert host.write do
-        written? :shutdown, address: supervisor_address
+      assert host.send do
+        sent? :shutdown, address: supervisor_address
       end
     end
   end

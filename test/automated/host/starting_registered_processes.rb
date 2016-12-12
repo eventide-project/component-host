@@ -19,9 +19,9 @@ context "Host Starts Registered Processes" do
           end
         end
 
-        test "Write dependency is configured" do
-          assert process.write do
-            instance_of? Actor::Messaging::Write
+        test "Send dependency is configured" do
+          assert process.send do
+            instance_of? Actor::Messaging::Send
           end
         end
 
