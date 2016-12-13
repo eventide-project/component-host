@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'process_host'
-  s.version = '0.3.0.0'
+  s.version = '0.4.0.0'
   s.summary = 'Run multiple logical processes inside a single physical process'
   s.description = ' '
 
