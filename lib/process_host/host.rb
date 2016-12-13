@@ -2,8 +2,6 @@ module ProcessHost
   class Host
     include ::Log::Dependency
 
-    attr_writer :record_error_proc
-
     dependency :signal, Signal
     dependency :send, Actor::Messaging::Send
 
@@ -35,13 +33,17 @@ module ProcessHost
     end
 
     def record_error(&block)
-      self.record_error_proc = block
+      record_errors_observer.record_error_proc = block
     end
 
     def start(&block)
       started_processes = []
 
       Actor::Supervisor.start do |supervisor|
+        supervisor.add_observer record_errors_observer
+
+        supervisor.add_observer log_observer
+
         signal.trap 'TSTP' do
           message = Actor::Messages::Suspend
 
@@ -66,31 +68,35 @@ module ProcessHost
           logger.info { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
-        processes.each_value do |process_class|
-          process = process_class.build
+        begin
+          processes.each_value do |process_class|
+            process = process_class.build
 
-          started_processes << process
+            started_processes << process
 
-          process.start
+            process.start
+          end
+        rescue => error
+          record_errors_observer.(error)
+          raise error
         end
 
         block.(supervisor) if block
       end
 
       started_processes
+    end
 
-    rescue => error
-      logger.fatal "Error raised; exiting process (ErrorClass: #{error.class.name}, Message: #{error.message.inspect})"
-      record_error_proc.(error)
-      raise error
+    def record_errors_observer
+      @record_errors_observer ||= SupervisorObservers::RecordErrors.new
+    end
+
+    def log_observer
+      @log_observer ||= SupervisorObservers::Log.new
     end
 
     def processes
       @processes ||= {}
-    end
-
-    def record_error_proc
-      @record_error_proc ||= proc { }
     end
 
     NameConflictError = Class.new StandardError

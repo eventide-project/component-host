@@ -1,9 +1,9 @@
 require_relative '../automated_init'
 
-context "Error Is Raised" do
+context "Error Is Raised By Actor" do
   context "No error recorder is specified" do
     host = Host.new
-    host.register Controls::Process::RaisesError
+    host.register Controls::Process::ActorCrashes
 
     test "Error is not suppressed" do
       assert proc { host.start } do
@@ -16,7 +16,7 @@ context "Error Is Raised" do
     recorded_error = nil
 
     host = Host.new
-    host.register Controls::Process::RaisesError
+    host.register Controls::Process::ActorCrashes
 
     host.record_error do |err|
       recorded_error = err
@@ -29,7 +29,7 @@ context "Error Is Raised" do
     end
 
     test "Error recorder is actuated and supplied the error that was raised" do
-      assert recorded_error == Controls::Process::RaisesError.error
+      assert recorded_error == Controls::Process::ActorCrashes.error
     end
   end
 end

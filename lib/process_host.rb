@@ -10,5 +10,7 @@ require 'process_host/signal'
 require 'process_host/host'
 require 'process_host/process'
 require 'process_host/process/process_name'
+require 'process_host/supervisor_observers/log'
+require 'process_host/supervisor_observers/record_errors'
 
 require 'process_host/process_host'
