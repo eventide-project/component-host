@@ -5,11 +5,11 @@ module ProcessHost
       include ProcessHost::Log::Dependency
 
       handle Actor::Messages::ActorStarted do |msg|
-        logger.debug "Actor started (Address: #{msg.address}, Class: #{msg.actor.class})"
+        logger.debug "Actor started (Address: #{msg.address.id}, Class: #{msg.actor.class})"
       end
 
       handle Actor::Messages::ActorStopped do |msg|
-        logger.debug "Actor stopped (Address: #{msg.address}, Class: #{msg.actor.class})"
+        logger.debug "Actor stopped (Address: #{msg.address.id}, Class: #{msg.actor.class})"
       end
 
       handle Actor::Messages::ActorCrashed do |msg|

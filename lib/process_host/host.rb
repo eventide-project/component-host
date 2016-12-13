@@ -68,23 +68,28 @@ module ProcessHost
           logger.info { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
-        begin
-          processes.each_value do |process_class|
-            process = process_class.build
-
-            started_processes << process
-
-            process.start
-          end
-        rescue => error
-          record_errors_observer.(error)
-          raise error
+        start_processes do |process|
+          started_processes << process
         end
 
         block.(supervisor) if block
       end
 
       started_processes
+    end
+
+    def start_processes(&block)
+      processes.each_value do |process_class|
+        process = process_class.build
+
+        process.start
+
+        block.(process) if block
+      end
+
+    rescue => error
+      record_errors_observer.(error)
+      raise error
     end
 
     def record_errors_observer
