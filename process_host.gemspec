@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.files = Dir.glob('{lib}/**/*')
   s.platform = Gem::Platform::RUBY
-  s.required_ruby_version = '>= 2.2.3'
+  s.required_ruby_version = '>= 2.3.3'
 
   s.add_runtime_dependency 'async_invocation'
   s.add_runtime_dependency 'casing'
