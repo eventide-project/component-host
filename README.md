@@ -16,8 +16,8 @@ module SomeComponent
     include ProcessHost::Process
 
     def start
-      Consumers::Command.start
-      Consumers::Event.start
+      Consumers::Command.start "someComponent:command"
+      Consumers::Event.start "someComponent"
     end
   end
 end
