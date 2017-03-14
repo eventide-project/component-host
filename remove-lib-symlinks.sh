@@ -1,3 +1,3 @@
 source ./library-symlinks.sh
 
-remove_lib_symlinks 'process_host'
+remove_lib_symlinks 'component_host'
