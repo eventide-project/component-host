@@ -1,19 +1,15 @@
 require_relative '../automated_init'
 
-context "Process Is Registered With Host, Name Is Specified" do
+context "Component Is Registered With Host, Name Is Specified" do
   host = Host.new
-  process_class = Controls::Process::Example
+  start_proc = Controls::StartComponent.example
 
-  process_name = host.register process_class, :other_name
+  host.register start_proc, :other_name
 
-  test "Specified process name is returned" do
-    assert process_name == :other_name
-  end
-
-  test "Specified name is used to register process with host" do
+  test "Specified name is used to register component with host" do
     assert host do
-      registered? do |cls, name|
-        cls == process_class && name == :other_name
+      registered? do |_start_proc, name|
+        _start_proc == start_proc && name == :other_name
       end
     end
   end

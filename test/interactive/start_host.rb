@@ -1,5 +1,5 @@
 require_relative './interactive_init'
 
 ComponentHost.start 'interactive-test' do |host|
-  host.register Controls::Process::RunsContinuously
+  host.register Controls::StartComponent::RunsContinuously
 end
