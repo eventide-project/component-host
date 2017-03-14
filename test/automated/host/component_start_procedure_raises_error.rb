@@ -1,9 +1,9 @@
 require_relative '../automated_init'
 
-context "Error Is Raised By Process During Startup" do
+context "Error Is Raised By Component Startup Procedure" do
   context "No error recorder is specified" do
     host = Host.new
-    host.register Controls::Process::RaisesError
+    host.register Controls::StartComponent::RaisesError
 
     test "Error is not suppressed" do
       assert proc { host.start } do
@@ -16,7 +16,7 @@ context "Error Is Raised By Process During Startup" do
     recorded_error = nil
 
     host = Host.new
-    host.register Controls::Process::RaisesError
+    host.register Controls::StartComponent::RaisesError
 
     host.record_error do |err|
       recorded_error = err
@@ -29,7 +29,7 @@ context "Error Is Raised By Process During Startup" do
     end
 
     test "Error recorder is actuated and supplied the error that was raised" do
-      assert recorded_error == Controls::Process::RaisesError.error
+      assert recorded_error == Controls::StartComponent::RaisesError.error
     end
   end
 end

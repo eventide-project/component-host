@@ -1,10 +1,8 @@
-module ProcessHost
+module ComponentHost
   module Controls
-    module Process
-      class ActorCrashes
-        include ProcessHost::Process
-
-        def start
+    module StartComponent
+      module ActorCrashes
+        def self.call
           Actor.start
         end
 

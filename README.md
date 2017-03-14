@@ -1,21 +1,19 @@
-# ProcessHost
+# ComponentHost
 
-Host for independent, autonomous ruby processes implemented as actors using the [actor](https://github.com/ntl/actor) library.
+Host for ruby components that use the [actor](https://github.com/ntl/actor) library.
 
 ## Usage
 
-Inside your component, define one or more _processes_. In this context, a process merely consists of a start up script for a particular actor or assembly of actors. An example of an assembly of actors would be a stream consumer.
+Inside your component, define a _start script_. In this context, a start script merely consists of ruby code that starts a particular actor or assembly of actors. An example of an actor would be a consumer.
 
-Suppose a component contains two consumers, one for commands, and another for events. The following process will start both consumers:
+Suppose a component would need two consumers running: one for all commands, and another for all events. The following start up script will start both consumers:
 
 ```ruby
-# lib/some_component/process.rb
+# lib/some_component/start.rb
 
 module SomeComponent
-  class Process
-    include ProcessHost::Process
-
-    def start
+  module Start
+    def self.call
       Consumers::Command.start "someComponent:command"
       Consumers::Event.start "someComponent"
     end
@@ -23,16 +21,16 @@ module SomeComponent
 end
 ```
 
-With this process defined, a start-up script can be defined for the entire component:
+With this start script included with the component, an executable file that hosts the component can be written:
 
 ```ruby
 # bin/start.rb
 
-ProcessHost.start 'some-component' do |host|
-  host.register SomeComponent::Process
+ComponentHost.start 'some-component' do |host|
+  host.register SomeComponent::Start
 end
 ```
 
 ## License
 
-The `process-host` library is released under the [MIT License](https://github.com/obsidian-btc/process-host/blob/master/MIT-License.txt).
+The `component-host` library is released under the [MIT License](https://github.com/obsidian-btc/component-host/blob/master/MIT-License.txt).

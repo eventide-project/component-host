@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   class Host
     include ::Log::Dependency
 
@@ -12,24 +12,18 @@ module ProcessHost
       instance
     end
 
-    def register(process_class, process_name=nil)
-      logger.trace { "Registering process (ProcessClass: #{process_class}, Name: #{process_name.inspect})" }
+    def register(start_proc, name=nil, &block)
+      start_proc ||= proc { yield }
 
-      process_name ||= process_class.process_name
+      logger.trace { "Registering component (StartProcedure: #{start_proc}, Name: #{name || '(none)'})" }
 
-      if registered_process = processes[process_name]
-        error_message = "Process with specified name is already registered (ProcessClass: #{process_class}, Name: #{process_name.inspect}, RegisteredProcessClass: #{registered_process.name})"
+      component = Component.new start_proc, name
 
-        logger.error error_message
+      components << component
 
-        raise NameConflictError, error_message
-      else
-        processes[process_name] = process_class
-      end
+      logger.debug { "Component registered (StartProcedure: #{start_proc}, Name: #{name || '(none)'})" }
 
-      logger.debug { "Process registered (ProcessClass: #{process_class}, Name: #{process_name.inspect})" }
-
-      process_name
+      component
     end
 
     def record_error(&block)
@@ -37,7 +31,7 @@ module ProcessHost
     end
 
     def start(&block)
-      started_processes = []
+      started_components = []
 
       Actor::Supervisor.start do |supervisor|
         supervisor.add_observer record_errors_observer
@@ -68,23 +62,21 @@ module ProcessHost
           logger.info { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
-        start_processes do |process|
-          started_processes << process
+        start_components do |component|
+          started_components << component
         end
 
         block.(supervisor) if block
       end
 
-      started_processes
+      started_components
     end
 
-    def start_processes(&block)
-      processes.each_value do |process_class|
-        process = process_class.build
+    def start_components(&block)
+      components.each do |component|
+        component.start
 
-        process.start
-
-        block.(process) if block
+        block.(component) if block
       end
 
     rescue => error
@@ -100,18 +92,22 @@ module ProcessHost
       @log_observer ||= SupervisorObservers::Log.new
     end
 
-    def processes
-      @processes ||= {}
+    def components
+      @components ||= []
     end
 
-    NameConflictError = Class.new StandardError
+    Component = Struct.new :start_proc, :name do
+      def start
+        start_proc.()
+      end
+    end
 
     module Assertions
       def registered?(&block)
-        return processes.any? if block.nil?
+        block ||= proc { true }
 
-        processes.any? do |name, process_class|
-          block.(process_class, name)
+        components.any? do |component|
+          block.(component.start_proc, component.name)
         end
       end
     end

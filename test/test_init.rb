@@ -4,10 +4,10 @@ ENV['LOG_LEVEL'] ||= '_min'
 puts RUBY_DESCRIPTION
 
 require_relative '../init.rb'
-require 'process_host/controls'
+require 'component_host/controls'
 
 require 'test_bench'; TestBench.activate
 
 require 'pp'
 
-include ProcessHost
+include ComponentHost

@@ -1,0 +1,7 @@
+require 'component_host/controls/error'
+require 'component_host/controls/process_name'
+require 'component_host/controls/start_component'
+require 'component_host/controls/start_component/actor_crashes'
+require 'component_host/controls/start_component/raises_error'
+require 'component_host/controls/start_component/runs_continuously'
+require 'component_host/controls/start_component/stops_immediately'

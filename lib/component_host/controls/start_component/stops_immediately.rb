@@ -1,10 +1,8 @@
-module ProcessHost
+module ComponentHost
   module Controls
-    module Process
-      class StopsImmediately
-        include ProcessHost::Process
-
-        def start
+    module StartComponent
+      module StopsImmediately
+        def self.call
           Actor.start
         end
 

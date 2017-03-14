@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
-  s.name = 'process_host'
+  s.name = 'component_host'
   s.version = '0.4.0.0'
-  s.summary = 'Run multiple logical processes inside a single physical process'
+  s.summary = 'Host components inside a single physical process'
   s.description = ' '
 
   s.authors = ['The Eventide Project']
   s.email = 'opensource@eventide-project.org'
-  s.homepage = 'https://github.com/eventide-project/process-host'
+  s.homepage = 'https://github.com/eventide-project/component-host'
   s.licenses = ['MIT']
 
   s.require_paths = ['lib']
@@ -14,11 +14,12 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.required_ruby_version = '>= 2.3.3'
 
-  s.add_runtime_dependency 'async_invocation'
-  s.add_runtime_dependency 'casing'
-  s.add_runtime_dependency 'log'
   s.add_runtime_dependency 'ntl-actor'
-  s.add_runtime_dependency 'virtual'
+
+  s.add_runtime_dependency 'evt-async_invocation'
+  s.add_runtime_dependency 'evt-casing'
+  s.add_runtime_dependency 'evt-log'
+  s.add_runtime_dependency 'evt-virtual'
 
   s.add_development_dependency 'test_bench'
 end
