@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   class Host
     include ::Log::Dependency
 

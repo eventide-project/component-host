@@ -1,8 +1,8 @@
-module ProcessHost
+module ComponentHost
   module Controls
     module Process
       class RunsContinuously
-        include ProcessHost::Process
+        include ComponentHost::Process
 
         def start
           Actor.start

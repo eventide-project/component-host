@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   module Controls
     module ComponentName
       def self.example

@@ -1,8 +1,8 @@
-module ProcessHost
+module ComponentHost
   module SupervisorObservers
     class Log
       include Actor::Supervisor::Observer
-      include ProcessHost::Log::Dependency
+      include ComponentHost::Log::Dependency
 
       handle Actor::Messages::ActorStarted do |msg|
         logger.debug "Actor started (Address: #{msg.address.id}, Actor: #{msg.actor.digest})"

@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   def self.start(component_name, &block)
     logger = ::Log.get self
 

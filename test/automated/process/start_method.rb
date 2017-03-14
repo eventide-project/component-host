@@ -21,7 +21,7 @@ context "Process Start Method" do
 
   context "Specialized method is not implemented by including class" do
     cls = Class.new do
-      include ProcessHost::Process
+      include ComponentHost::Process
     end
 
     process = cls.new

@@ -2,7 +2,7 @@ require_relative '../automated_init'
 
 context "Specified Process Name" do
   process_class = Class.new do
-    include ProcessHost::Process
+    include ComponentHost::Process
 
     process_name :some_process
   end

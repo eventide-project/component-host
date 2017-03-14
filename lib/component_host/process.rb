@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   module Process
     def self.included(cls)
       cls.class_exec do

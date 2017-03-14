@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   module Controls
     module Process
       def self.example
@@ -12,7 +12,7 @@ module ProcessHost
       end
 
       class Example
-        include ProcessHost::Process
+        include ComponentHost::Process
 
         process_name Name.example
 

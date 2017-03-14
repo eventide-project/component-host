@@ -6,7 +6,7 @@ context "Multiple Processes Are Registered With Identical Names" do
   host.register Controls::Process::Example
 
   other_process_class = Class.new do
-    include ProcessHost::Process
+    include ComponentHost::Process
 
     process_name Controls::Process::Name.example
   end

@@ -2,7 +2,7 @@ require_relative '../automated_init'
 
 context "Signal Substitute" do
   context "No signal handler has been defined" do
-    substitute = SubstAttr::Substitute.build ProcessHost::Signal
+    substitute = SubstAttr::Substitute.build ComponentHost::Signal
 
     context "Signal is simulated" do
       substitute.simulate_signal 'SOME-SIGNAL'
@@ -18,7 +18,7 @@ context "Signal Substitute" do
   context "Signal handler has been defined" do
     handled = false
 
-    substitute = SubstAttr::Substitute.build ProcessHost::Signal
+    substitute = SubstAttr::Substitute.build ComponentHost::Signal
     substitute.trap 'SOME-SIGNAL' do
       handled = true
     end

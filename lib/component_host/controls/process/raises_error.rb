@@ -1,8 +1,8 @@
-module ProcessHost
+module ComponentHost
   module Controls
     module Process
       class RaisesError
-        include ProcessHost::Process
+        include ComponentHost::Process
 
         def start
           raise error

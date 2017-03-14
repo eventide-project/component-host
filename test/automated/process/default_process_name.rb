@@ -3,7 +3,7 @@ require_relative '../automated_init'
 context "Default Process Name" do
   context "Process name is queried" do
     process_class = Class.new do
-      include ProcessHost::Process
+      include ComponentHost::Process
 
       def self.name
         'SomeProcess'
@@ -19,7 +19,7 @@ context "Default Process Name" do
 
   context "Class is anonymous" do
     process_class = Class.new do
-      include ProcessHost::Process
+      include ComponentHost::Process
     end
 
     context "Process name is queried" do
@@ -33,7 +33,7 @@ context "Default Process Name" do
 
   context "Class is nested within namespaces" do
     process_class = Class.new do
-      include ProcessHost::Process
+      include ComponentHost::Process
 
       def self.name
         'SomeNamespace::OtherNamespace::Process'

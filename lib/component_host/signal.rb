@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   module Signal
     def self.configure(receiver, attr_name: nil)
       attr_name ||= :signal

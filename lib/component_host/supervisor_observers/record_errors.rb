@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   module SupervisorObservers
     class RecordErrors
       include Actor::Supervisor::Observer

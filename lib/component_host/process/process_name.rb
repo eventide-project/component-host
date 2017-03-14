@@ -1,4 +1,4 @@
-module ProcessHost
+module ComponentHost
   module Process
     module ProcessName
       def self.extended(cls)

@@ -17,10 +17,4 @@ context "Process Is Registered With Host" do
       end
     end
   end
-
-  test "Process class is not instantiated" do
-    instances = ObjectSpace.each_object process_class
-
-    assert instances.none?
-  end
 end

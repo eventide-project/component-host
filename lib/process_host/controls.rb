@@ -1,7 +1,0 @@
-require 'process_host/controls/component_name'
-require 'process_host/controls/error'
-require 'process_host/controls/process'
-require 'process_host/controls/process/actor_crashes'
-require 'process_host/controls/process/raises_error'
-require 'process_host/controls/process/runs_continuously'
-require 'process_host/controls/process/stops_immediately'

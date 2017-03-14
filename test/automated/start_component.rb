@@ -3,7 +3,7 @@ require_relative './automated_init'
 context "Starting Component" do
   component_name = Controls::ComponentName.example
 
-  started_processes = ProcessHost.start component_name do
+  started_processes = ComponentHost.start component_name do
     register Controls::Process::StopsImmediately, 'process-1'
     register Controls::Process::StopsImmediately, 'process-2'
   end
