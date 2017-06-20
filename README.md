@@ -14,8 +14,8 @@ Suppose a component would need two consumers running: one for all commands, and 
 module SomeComponent
   module Start
     def self.call
-      Consumers::Command.start "someComponent:command"
-      Consumers::Event.start "someComponent"
+      Consumers::Command.start("someComponent:command")
+      Consumers::Event.start("someComponent")
     end
   end
 end
