@@ -1,3 +1,3 @@
 require_relative './load_path'
 
-require component_host
+require 'component_host'
