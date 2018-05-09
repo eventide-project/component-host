@@ -17,7 +17,7 @@ module ComponentHost
           end
 
           handle :print_heartbeat do
-            logger.info "Heartbeat (Counter: #{counter})"
+            logger.info(tag: :heartbeat) "Heartbeat (Counter: #{counter})"
 
             :next
           end
