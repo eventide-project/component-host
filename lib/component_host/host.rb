@@ -62,6 +62,14 @@ module ComponentHost
           logger.info(tag: :signal) { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
+        signal.trap 'TERM' do
+          message = Actor::Messages::Shutdown
+
+          send.(message, supervisor.address)
+
+          logger.info { "Handled TERM signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+        end
+
         start_components do |component|
           started_components << component
         end
