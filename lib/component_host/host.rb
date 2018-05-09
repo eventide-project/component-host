@@ -43,7 +43,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info { "Handled TSTP signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tag: :signal) { "Handled TSTP signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'CONT' do
@@ -51,7 +51,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info { "Handled CONT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tag: :signal) { "Handled CONT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'INT' do
@@ -59,7 +59,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tag: :signal) { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'TERM' do
