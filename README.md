@@ -33,4 +33,4 @@ end
 
 ## License
 
-The `component-host` library is released under the [MIT License](https://github.com/obsidian-btc/component-host/blob/master/MIT-License.txt).
+The `component-host` library is released under the [MIT License](https://github.com/eventide-project/component-host/blob/master/MIT-License.txt).
