@@ -6,7 +6,7 @@ Host for ruby components that use the [actor](https://github.com/ntl/actor) libr
 
 Inside your component, define a _start script_. In this context, a start script merely consists of ruby code that starts a particular actor or assembly of actors. An example of an actor would be a consumer.
 
-Suppose a component would need two consumers running: one for all commands, and another for all events. The following start up script will start both consumers:
+Suppose a component would need two consumers running. For example: one for a command stream and one for an event stream. The following script starts both consumers:
 
 ```ruby
 # lib/some_component/start.rb
