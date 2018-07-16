@@ -21,7 +21,7 @@ module ComponentHost
 
       components << component
 
-      logger.debug { "Registered component (StartProcedure: #{start_proc}, Name: #{name || '(none)'})" }
+      logger.info(tag: :*) { "Registered component (StartProcedure: #{start_proc}, Name: #{name || '(none)'})" }
 
       component
     end
