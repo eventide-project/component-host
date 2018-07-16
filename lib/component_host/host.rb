@@ -1,6 +1,6 @@
 module ComponentHost
   class Host
-    include ::Log::Dependency
+    include Log::Dependency
 
     dependency :signal, Signal
     dependency :send, Actor::Messaging::Send
@@ -21,7 +21,7 @@ module ComponentHost
 
       components << component
 
-      logger.debug { "Component registered (StartProcedure: #{start_proc}, Name: #{name || '(none)'})" }
+      logger.debug { "Registered component (StartProcedure: #{start_proc}, Name: #{name || '(none)'})" }
 
       component
     end
@@ -43,7 +43,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info(tag: :signal) { "Handled TSTP signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled TSTP signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'CONT' do
@@ -51,7 +51,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info(tag: :signal) { "Handled CONT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled CONT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'INT' do
@@ -59,7 +59,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info(tag: :signal) { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'TERM' do
@@ -67,7 +67,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info { "Handled TERM signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled TERM signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         start_components do |component|

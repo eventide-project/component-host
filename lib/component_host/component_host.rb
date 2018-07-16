@@ -1,6 +1,6 @@
 module ComponentHost
   def self.start(component_name, &block)
-    logger = ::Log.get self
+    logger = Log.get(self)
 
     host = Host.build
 
