@@ -5,7 +5,7 @@ module ComponentHost
         Example.new
       end
 
-      Example = Class.new StandardError
+      Example = Class.new(RuntimeError)
     end
   end
 end
