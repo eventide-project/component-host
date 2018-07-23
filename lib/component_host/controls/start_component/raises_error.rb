@@ -3,7 +3,7 @@ module ComponentHost
     module StartComponent
       module RaisesError
         def self.call
-          raise error
+          raise error, "An example error"
         end
 
         def self.error

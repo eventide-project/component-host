@@ -89,6 +89,7 @@ module ComponentHost
 
     rescue => error
       record_errors_observer.(error)
+      logger.fatal(tags: [:*, :component, :lifecycle]) { "#{error.message} (Error: #{error.class})" }
       raise error
     end
 
