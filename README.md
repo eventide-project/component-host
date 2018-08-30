@@ -14,8 +14,8 @@ Suppose a component would need two consumers running. For example: one for a com
 module SomeComponent
   module Start
     def self.call
-      Consumers::Command.start("someComponent:command")
-      Consumers::Event.start("someComponent")
+      Consumers::Command.start('someComponent:command')
+      Consumers::Event.start('someComponent')
     end
   end
 end
@@ -26,7 +26,7 @@ With this start script included with the component, an executable file that host
 ```ruby
 # bin/start.rb
 
-ComponentHost.start 'some-component' do |host|
+ComponentHost.start 'some-process' do |host|
   host.register SomeComponent::Start
 end
 ```

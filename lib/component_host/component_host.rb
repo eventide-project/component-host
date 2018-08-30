@@ -1,5 +1,5 @@
 module ComponentHost
-  def self.start(component_name, &block)
+  def self.start(name, &block)
     logger = Log.get(self)
 
     host = Host.build
@@ -7,7 +7,7 @@ module ComponentHost
     host.instance_exec host, &block
 
     host.start do
-      logger.info(tags: [:*, :component, :start, :lifecycle]) { "Started: #{component_name} (ProcessID: #{::Process.pid})" }
+      logger.info(tags: [:*, :component, :start, :lifecycle]) { "Started: #{name} (ProcessID: #{::Process.pid})" }
     end
   end
 end

@@ -1,5 +1,7 @@
 require_relative './interactive_init'
 
+name = Controls::Name.example
+
 ComponentHost.start 'interactive-test' do |host|
-  host.register Controls::StartComponent::RunsContinuously
+  host.register Controls::StartComponent::RunsContinuously, name
 end

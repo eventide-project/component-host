@@ -1,8 +1,8 @@
 module ComponentHost
   module Controls
-    module ProcessName
+    module Name
       def self.example
-        'some-process'
+        'some-name'
       end
     end
   end

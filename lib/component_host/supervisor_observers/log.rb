@@ -15,7 +15,7 @@ module ComponentHost
       handle Actor::Messages::ActorCrashed do |msg|
         error = msg.error
 
-        logger.error(tags: [:actor, :lifecycle, :stop, :crash]) { "Error raised (ErrorClass: #{error.class.name}, Actor: #{msg.actor.digest}, Message: #{error.message.inspect})" }
+        logger.error(tags: [:actor, :lifecycle, :stop, :crash]) { "Error raised (Error: #{error.class.name}, Actor: #{msg.actor.digest}, Message: #{error.message.inspect})" }
       end
     end
   end
