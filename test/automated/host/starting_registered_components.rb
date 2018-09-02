@@ -14,7 +14,7 @@ context "Host Starts Registered Components" do
     components.each_with_index do |component, index|
       context "Component ##{index + 1}" do
         test "Is started" do
-          assert component.start_proc do
+          assert component.component_initiator do
             executed?
           end
         end

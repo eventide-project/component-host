@@ -2,14 +2,14 @@ require_relative '../automated_init'
 
 context "Component Is Registered With Host" do
   host = Host.new
-  start_proc = Controls::StartComponent.example
+  component_initiator = Controls::StartComponent.example
 
-  host.register start_proc
+  host.register component_initiator
 
   test "Sart procedure is registered" do
     assert host do
-      registered? do |_start_proc|
-        _start_proc == start_proc
+      registered? do |_component_initiator|
+        _component_initiator == component_initiator
       end
     end
   end
