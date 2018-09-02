@@ -1,35 +1,34 @@
 # ComponentHost
 
-Host for ruby components that use the [actor](https://github.com/ntl/actor) library.
+Host for Ruby components that use the [actor](https://github.com/ntl/actor) library.
 
 ## Usage
 
-Inside your component, define a _start script_. In this context, a start script merely consists of ruby code that starts a particular actor or assembly of actors. An example of an actor would be a consumer.
-
-Suppose a component would need two consumers running. For example: one for a command stream and one for an event stream. The following script starts both consumers:
-
-```ruby
-# lib/some_component/start.rb
-
+``` ruby
+# The "component initiator" binds consumers to their streams and starts
+# the consumers
+# Until this point, handlers have no knowledge of which streams they process
+# Starting the consumers starts the stream readers and gets messages flowing
+# into the consumer's handlers
 module SomeComponent
-  module Start
-    def self.call
-      Consumers::Command.start('someComponent:command')
-      Consumers::Event.start('someComponent')
-    end
+  def self.call
+    command_stream_name = 'something:command'
+    SomeConsumer.start(command_stream_name)
   end
 end
-```
 
-With this start script included with the component, an executable file that hosts the component can be written:
-
-```ruby
-# bin/start.rb
-
-ComponentHost.start 'some-process' do |host|
-  host.register SomeComponent::Start
+# ComponentHost is the runnable part of the service
+# Register a component module with the component host, then start the host
+# and messages sent to its streams are dispatched to the handlers
+component_name = 'some-component'
+ComponentHost.start(component_name) do |host|
+  host.register(SomeComponent)
 end
 ```
+
+## More Documentation
+
+See the [ComponentHost](http://docs.eventide-project.org/user-guide/component-host.html) user guide for more information.
 
 ## License
 
