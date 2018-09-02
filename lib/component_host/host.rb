@@ -15,13 +15,13 @@ module ComponentHost
     def register(component_initiator, name=nil, &block)
       component_initiator ||= proc { yield }
 
-      logger.trace { "Registering component (StartProcedure: #{component_initiator}, Name: #{name || '(none)'})" }
+      logger.trace { "Registering component (Component Initiator: #{component_initiator}, Name: #{name || '(none)'})" }
 
       component = Component.new component_initiator, name
 
       components << component
 
-      logger.info(tag: :*) { "Registered component (StartProcedure: #{component_initiator}, Name: #{name || '(none)'})" }
+      logger.info(tag: :*) { "Registered component (Component Initiator: #{component_initiator}, Name: #{name || '(none)'})" }
 
       component
     end
@@ -43,7 +43,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info(tags: [:*, :signal]) { "Handled TSTP signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled TSTP signal (Message Name: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'CONT' do
@@ -51,7 +51,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info(tags: [:*, :signal]) { "Handled CONT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled CONT signal (Message Name: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'INT' do
@@ -59,7 +59,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info(tags: [:*, :signal]) { "Handled INT signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled INT signal (Message Name: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         signal.trap 'TERM' do
@@ -67,7 +67,7 @@ module ComponentHost
 
           send.(message, supervisor.address)
 
-          logger.info(tags: [:*, :signal]) { "Handled TERM signal (MessageName: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
+          logger.info(tags: [:*, :signal]) { "Handled TERM signal (Message Name: #{message.message_name}, SupervisorAddress: #{supervisor.address.id})" }
         end
 
         start_components do |component|
