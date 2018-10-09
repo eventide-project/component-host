@@ -1,5 +1,7 @@
 module ComponentHost
   class Host
+    Dependency.activate(self)
+
     include Log::Dependency
 
     dependency :signal, Signal
