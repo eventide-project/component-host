@@ -28,7 +28,7 @@ end
 
 ## More Documentation
 
-See the [ComponentHost](http://docs.eventide-project.org/user-guide/component-host.html) user guide for more information.
+See the [Eventide documentation site](http://docs.eventide-project.org) for more information, examples, and user guides.
 
 ## License
 
