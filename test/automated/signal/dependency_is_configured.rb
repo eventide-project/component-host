@@ -1,21 +1,23 @@
 require_relative '../automated_init'
 
-context "Signal Dependency is Configured" do
-  receiver = OpenStruct.new
+context "Signal" do
+  context "Dependency is Configured" do
+    receiver = OpenStruct.new
 
-  context "Attribute name is not specified" do
-    ComponentHost::Signal.configure receiver
+    context "Attribute name is not specified" do
+      ComponentHost::Signal.configure receiver
 
-    test "Signal attribute is configured" do
-      assert receiver.signal == ::Signal
+      test "Signal attribute is configured" do
+        assert receiver.signal == ::Signal
+      end
     end
-  end
 
-  context "Attribute name is specified" do
-    ComponentHost::Signal.configure receiver, attr_name: :some_attr
+    context "Attribute name is specified" do
+      ComponentHost::Signal.configure receiver, attr_name: :some_attr
 
-    test "Attribute is configured" do
-      assert receiver.some_attr == ::Signal
+      test "Attribute is configured" do
+        assert receiver.some_attr == ::Signal
+      end
     end
   end
 end

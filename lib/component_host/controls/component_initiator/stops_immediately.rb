@@ -1,24 +1,16 @@
 module ComponentHost
   module Controls
-    module StartComponent
-      module ActorCrashes
+    module ComponentInitiator
+      module StopsImmediately
         def self.call
           Actor.start
-        end
-
-        def self.error
-          @error ||= Error.example
         end
 
         class Actor
           include ::Actor
 
           handle :start do
-            raise error
-          end
-
-          def error
-            ActorCrashes.error
+            :stop
           end
         end
       end

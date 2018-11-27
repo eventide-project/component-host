@@ -1,6 +1,6 @@
 module ComponentHost
   module Controls
-    module StartComponent
+    module ComponentInitiator
       def self.example
         Example.new
       end

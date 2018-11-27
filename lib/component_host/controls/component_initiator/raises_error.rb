@@ -1,6 +1,6 @@
 module ComponentHost
   module Controls
-    module StartComponent
+    module ComponentInitiator
       module RaisesError
         def self.call
           raise error, "An example error"
