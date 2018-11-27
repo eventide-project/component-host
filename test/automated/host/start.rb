@@ -4,8 +4,8 @@ context "Host" do
   context "Start" do
     host = Host.new
 
-    host.register Controls::StartComponent.example, 'component-1'
-    host.register Controls::StartComponent.example, 'component-2'
+    host.register Controls::ComponentInitiator.example, 'component-1'
+    host.register Controls::ComponentInitiator.example, 'component-2'
 
     components = host.start do
       host.abort

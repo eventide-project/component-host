@@ -3,7 +3,7 @@ require_relative '../../automated_init'
 context "Host" do
   context "Component Registration" do
     context "Optional Name" do
-      component_initiator = Controls::StartComponent.example
+      component_initiator = Controls::ComponentInitiator.example
 
       context "Name is Specified" do
         host = Host.new
