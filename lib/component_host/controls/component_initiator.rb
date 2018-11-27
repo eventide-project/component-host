@@ -1,6 +1,6 @@
 module ComponentHost
   module Controls
-    module StartComponent
+    module ComponentInitiator
       def self.example
         Example.new
       end
@@ -12,10 +12,8 @@ module ComponentHost
           self.executed = true
         end
 
-        module Assertions
-          def executed?
-            executed ? true : false
-          end
+        def executed?
+          executed ? true : false
         end
       end
     end

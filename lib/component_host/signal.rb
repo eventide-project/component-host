@@ -16,7 +16,15 @@ module ComponentHost
           handlers[signal] = handler
         end
 
-        def simulate_signal(signal)
+        def trapped?(signal=nil)
+          if signal.nil?
+            records.any?
+          else
+            records.any? { |record| record.signal == signal }
+          end
+        end
+
+        def send(signal)
           handler = handlers[signal]
 
           return if handler.nil?
@@ -37,16 +45,6 @@ module ComponentHost
         end
 
         Record = Struct.new :signal
-
-        module Assertions
-          def trapped?(signal=nil)
-            if signal.nil?
-              records.any?
-            else
-              records.any? { |record| record.signal == signal }
-            end
-          end
-        end
       end
     end
   end

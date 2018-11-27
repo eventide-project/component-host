@@ -13,16 +13,16 @@ module ComponentHost
       instance
     end
 
-    def register(component_initiator, name=nil, &block)
-      component_initiator ||= proc { yield }
+    def register(initiator, name=nil, &block)
+      initiator ||= proc { yield }
 
-      logger.trace { "Registering component (Component Initiator: #{component_initiator}, Name: #{name || '(none)'})" }
+      logger.trace { "Registering component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
 
-      component = Component.new component_initiator, name
+      component = Component.new initiator, name
 
       components << component
 
-      logger.info(tag: :*) { "Registered component (Component Initiator: #{component_initiator}, Name: #{name || '(none)'})" }
+      logger.debug { "Registered component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
 
       component
     end
@@ -31,7 +31,7 @@ module ComponentHost
       record_errors_observer.record_error_proc = block
     end
 
-    def start(&block)
+    def start(&probe)
       started_components = []
 
       Actor::Supervisor.start do |supervisor|
@@ -75,7 +75,7 @@ module ComponentHost
           started_components << component
         end
 
-        block.(supervisor) if block
+        probe.(supervisor) if probe
       end
 
       started_components
@@ -83,7 +83,9 @@ module ComponentHost
 
     def start_components(&block)
       components.each do |component|
+        logger.info(tag: :*) { "Starting Component: #{component.initiator} (Name: #{component.name || '(none)'})" }
         component.start
+        logger.info(tag: :*) { "Started Component: #{component.initiator} (Name: #{component.name || '(none)'})" }
 
         block.(component) if block
       end
@@ -106,19 +108,21 @@ module ComponentHost
       @components ||= []
     end
 
-    Component = Struct.new :component_initiator, :name do
-      def start
-        component_initiator.()
+    def abort
+      raise StopIteration
+    end
+
+    def registered?(&block)
+      block ||= proc { true }
+
+      components.any? do |component|
+        block.(component.initiator, component.name)
       end
     end
 
-    module Assertions
-      def registered?(&block)
-        block ||= proc { true }
-
-        components.any? do |component|
-          block.(component.component_initiator, component.name)
-        end
+    Component = Struct.new :initiator, :name do
+      def start
+        initiator.()
       end
     end
   end

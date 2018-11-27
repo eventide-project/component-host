@@ -1,6 +1,6 @@
 module ComponentHost
   module Controls
-    module StartComponent
+    module ComponentInitiator
       module RunsContinuously
         def self.call
           Actor.start
