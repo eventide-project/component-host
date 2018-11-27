@@ -31,7 +31,7 @@ module ComponentHost
       record_errors_observer.record_error_proc = block
     end
 
-    def start(&block)
+    def start(&probe)
       started_components = []
 
       Actor::Supervisor.start do |supervisor|
@@ -75,7 +75,7 @@ module ComponentHost
           started_components << component
         end
 
-        block.(supervisor) if block
+        probe.(supervisor) if probe
       end
 
       started_components

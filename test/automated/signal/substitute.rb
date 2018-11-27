@@ -4,8 +4,8 @@ context "Signal Substitute" do
   context "No signal handler has been defined" do
     substitute = SubstAttr::Substitute.build ComponentHost::Signal
 
-    context "Signal is simulated" do
-      substitute.simulate_signal 'SOME-SIGNAL'
+    context "Signal is Sent" do
+      substitute.send 'SOME-SIGNAL'
 
       test "Signal is not trapped" do
         refute substitute do
@@ -23,8 +23,8 @@ context "Signal Substitute" do
       handled = true
     end
 
-    context "Signal is simulated" do
-      substitute.simulate_signal 'SOME-SIGNAL'
+    context "Signal is Sent" do
+      substitute.send 'SOME-SIGNAL'
 
       test "Handler block is invoked" do
         assert handled == true

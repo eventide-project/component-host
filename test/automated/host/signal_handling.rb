@@ -1,74 +1,76 @@
 require_relative '../automated_init'
 
-context "Signal Handling" do
-  context "Ruby process is sent TERM signal" do
-    supervisor_address = nil
+context "Host" do
+  context "Signal Handling" do
+    context "TERM" do
+      supervisor_address = nil
 
-    host = Host.new
-    host.start do |supervisor|
-      supervisor_address = supervisor.address
-      raise StopIteration
-    end
+      host = Host.new
+      host.start do |supervisor|
+        supervisor_address = supervisor.address
+        raise StopIteration
+      end
 
-    host.signal.simulate_signal 'TERM'
+      host.signal.send 'TERM'
 
-    test "Shutdown message is sent to supervior" do
-      assert host.send do
-        sent? :shutdown, address: supervisor_address
+      test "Shutdown message is sent to supervisor" do
+        assert host.send do
+          sent? :shutdown, address: supervisor_address
+        end
       end
     end
-  end
 
-  context "Ruby process is sent TSTP (ctrl+Z) signal" do
-    supervisor_address = nil
+    context "TSTP (ctrl+Z)" do
+      supervisor_address = nil
 
-    host = Host.new
-    host.start do |supervisor|
-      supervisor_address = supervisor.address
-      raise StopIteration
-    end
+      host = Host.new
+      host.start do |supervisor|
+        supervisor_address = supervisor.address
+        raise StopIteration
+      end
 
-    host.signal.simulate_signal 'TSTP'
+      host.signal.send 'TSTP'
 
-    test "Suspend message is sent to supervior" do
-      assert host.send do
-        sent? :suspend, address: supervisor_address
+      test "Suspend message is sent to supervisor" do
+        assert host.send do
+          sent? :suspend, address: supervisor_address
+        end
       end
     end
-  end
 
-  context "Ruby process is sent CONT signal" do
-    supervisor_address = nil
+    context "CONT" do
+      supervisor_address = nil
 
-    host = Host.new
-    host.start do |supervisor|
-      supervisor_address = supervisor.address
-      raise StopIteration
-    end
+      host = Host.new
+      host.start do |supervisor|
+        supervisor_address = supervisor.address
+        raise StopIteration
+      end
 
-    host.signal.simulate_signal 'CONT'
+      host.signal.send 'CONT'
 
-    test "Resume message is sent to supervior" do
-      assert host.send do
-        sent? :resume, address: supervisor_address
+      test "Resume message is sent to supervisor" do
+        assert host.send do
+          sent? :resume, address: supervisor_address
+        end
       end
     end
-  end
 
-  context "Ruby process is sent INT signal" do
-    supervisor_address = nil
+    context "INT" do
+      supervisor_address = nil
 
-    host = Host.new
-    host.start do |supervisor|
-      supervisor_address = supervisor.address
-      raise StopIteration
-    end
+      host = Host.new
+      host.start do |supervisor|
+        supervisor_address = supervisor.address
+        raise StopIteration
+      end
 
-    host.signal.simulate_signal 'INT'
+      host.signal.send 'INT'
 
-    test "Shutdown message is sent to supervior" do
-      assert host.send do
-        sent? :shutdown, address: supervisor_address
+      test "Shutdown message is sent to supervisor" do
+        assert host.send do
+          sent? :shutdown, address: supervisor_address
+        end
       end
     end
   end

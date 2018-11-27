@@ -16,7 +16,7 @@ module ComponentHost
           handlers[signal] = handler
         end
 
-        def simulate_signal(signal)
+        def send(signal)
           handler = handlers[signal]
 
           return if handler.nil?
