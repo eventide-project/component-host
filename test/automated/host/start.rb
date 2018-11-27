@@ -14,7 +14,7 @@ context "Host" do
     components.each_with_index do |component, index|
       context "Component ##{index + 1}" do
         test "Is started" do
-          assert component.component_initiator.executed?
+          assert component.initiator.executed?
         end
 
         test "Name is set" do

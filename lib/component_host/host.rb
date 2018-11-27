@@ -13,16 +13,16 @@ module ComponentHost
       instance
     end
 
-    def register(component_initiator, name=nil, &block)
-      component_initiator ||= proc { yield }
+    def register(initiator, name=nil, &block)
+      initiator ||= proc { yield }
 
-      logger.trace { "Registering component (Component Initiator: #{component_initiator}, Name: #{name || '(none)'})" }
+      logger.trace { "Registering component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
 
-      component = Component.new component_initiator, name
+      component = Component.new initiator, name
 
       components << component
 
-      logger.info(tag: :*) { "Registered component (Component Initiator: #{component_initiator}, Name: #{name || '(none)'})" }
+      logger.debug { "Registered component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
 
       component
     end
@@ -83,7 +83,9 @@ module ComponentHost
 
     def start_components(&block)
       components.each do |component|
+        logger.info(tag: :*) { "Starting Component: #{component.initiator} (Name: #{component.name || '(none)'})" }
         component.start
+        logger.info(tag: :*) { "Started Component: #{component.initiator} (Name: #{component.name || '(none)'})" }
 
         block.(component) if block
       end
@@ -114,13 +116,13 @@ module ComponentHost
       block ||= proc { true }
 
       components.any? do |component|
-        block.(component.component_initiator, component.name)
+        block.(component.initiator, component.name)
       end
     end
 
-    Component = Struct.new :component_initiator, :name do
+    Component = Struct.new :initiator, :name do
       def start
-        component_initiator.()
+        initiator.()
       end
     end
   end
