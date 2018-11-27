@@ -9,9 +9,7 @@ context "Signal" do
         substitute.send 'SOME-SIGNAL'
 
         test "Signal is not trapped" do
-          refute substitute do
-            trapped?
-          end
+          refute substitute.trapped?
         end
       end
     end
@@ -33,25 +31,19 @@ context "Signal" do
 
         context "Trapped predicate, no args" do
           test "True is returned" do
-            assert substitute do
-              trapped?
-            end
+            assert substitute.trapped?
           end
         end
 
         context "Trapped predicate, trapped signal is specified" do
           test "True is returned" do
-            assert substitute do
-              trapped? 'SOME-SIGNAL'
-            end
+            assert substitute.trapped?('SOME-SIGNAL')
           end
         end
 
         context "Trapped predicate, other signal is specified" do
           test "False is returned" do
-            refute substitute do
-              trapped? 'OTHER-SIGNAL'
-            end
+            refute substitute.trapped?('OTHER-SIGNAL')
           end
         end
       end

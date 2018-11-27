@@ -12,10 +12,8 @@ module ComponentHost
           self.executed = true
         end
 
-        module Assertions
-          def executed?
-            executed ? true : false
-          end
+        def executed?
+          executed ? true : false
         end
       end
     end

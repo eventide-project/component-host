@@ -110,19 +110,17 @@ module ComponentHost
       raise StopIteration
     end
 
-    Component = Struct.new :component_initiator, :name do
-      def start
-        component_initiator.()
+    def registered?(&block)
+      block ||= proc { true }
+
+      components.any? do |component|
+        block.(component.component_initiator, component.name)
       end
     end
 
-    module Assertions
-      def registered?(&block)
-        block ||= proc { true }
-
-        components.any? do |component|
-          block.(component.component_initiator, component.name)
-        end
+    Component = Struct.new :component_initiator, :name do
+      def start
+        component_initiator.()
       end
     end
   end
