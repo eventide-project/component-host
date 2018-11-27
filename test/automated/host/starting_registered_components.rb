@@ -9,7 +9,7 @@ context "Host" do
 
     context "Host is started" do
       components = host.start do
-        raise StopIteration
+        host.abort
       end
 
       components.each_with_index do |component, index|

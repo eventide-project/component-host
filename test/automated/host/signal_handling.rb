@@ -8,7 +8,7 @@ context "Host" do
       host = Host.new
       host.start do |supervisor|
         supervisor_address = supervisor.address
-        raise StopIteration
+        host.abort
       end
 
       host.signal.send 'TERM'
@@ -26,7 +26,7 @@ context "Host" do
       host = Host.new
       host.start do |supervisor|
         supervisor_address = supervisor.address
-        raise StopIteration
+        host.abort
       end
 
       host.signal.send 'TSTP'
@@ -44,7 +44,7 @@ context "Host" do
       host = Host.new
       host.start do |supervisor|
         supervisor_address = supervisor.address
-        raise StopIteration
+        host.abort
       end
 
       host.signal.send 'CONT'
@@ -62,7 +62,7 @@ context "Host" do
       host = Host.new
       host.start do |supervisor|
         supervisor_address = supervisor.address
-        raise StopIteration
+        host.abort
       end
 
       host.signal.send 'INT'

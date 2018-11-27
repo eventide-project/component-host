@@ -106,6 +106,10 @@ module ComponentHost
       @components ||= []
     end
 
+    def abort
+      raise StopIteration
+    end
+
     Component = Struct.new :component_initiator, :name do
       def start
         component_initiator.()
