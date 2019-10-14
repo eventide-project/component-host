@@ -8,19 +8,19 @@ context "Host" do
     host.register component_initiator
 
     test "Component initiator is registered" do
-      assert host do
-        registered? do |initiator|
-          initiator == component_initiator
-        end
+      registered = host.registered? do |initiator|
+        initiator == component_initiator
       end
+
+      assert(registered)
     end
 
     test "Name is not set" do
-      assert host do
-        registered? do |_, name|
-          name == nil
-        end
+      registered = host.registered? do |_, name|
+        name == nil
       end
+
+      assert(registered)
     end
   end
 end

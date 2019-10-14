@@ -13,11 +13,11 @@ context "Host" do
         host.register component_initiator, control_name
 
         test "Name is registered with the host" do
-          assert host do
-            registered? do |_, name|
-              name == control_name
-            end
+          registered = host.registered? do |_, name|
+            name == control_name
           end
+
+          assert(registered)
         end
       end
 
@@ -27,11 +27,11 @@ context "Host" do
         host.register component_initiator
 
         test "Name is not registered with the host" do
-          assert host do
-            registered? do |_, name|
-              name.nil?
-            end
+          registered = host.registered? do |_, name|
+            name.nil?
           end
+
+          assert(registered)
         end
       end
     end

@@ -8,8 +8,8 @@ context "Host" do
       host.register Controls::ComponentInitiator::ActorCrashes
 
       test "Error is raised" do
-        assert proc { host.start } do
-          raises_error? Controls::Error::Example
+        assert_raises Controls::Error::Example do
+          host.start
         end
       end
     end
@@ -25,8 +25,8 @@ context "Host" do
       end
 
       test "Error is raised" do
-        assert proc { host.start } do
-          raises_error? Controls::Error::Example
+        assert_raises Controls::Error::Example do
+          host.start
         end
       end
 

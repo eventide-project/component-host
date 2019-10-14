@@ -14,9 +14,7 @@ context "Host" do
       host.signal.send 'TERM'
 
       test "Shutdown message is sent to supervisor" do
-        assert host.send do
-          sent? :shutdown, address: supervisor_address
-        end
+        assert host.send.sent?(:shutdown, address: supervisor_address)
       end
     end
 
@@ -32,9 +30,7 @@ context "Host" do
       host.signal.send 'TSTP'
 
       test "Suspend message is sent to supervisor" do
-        assert host.send do
-          sent? :suspend, address: supervisor_address
-        end
+        assert host.send.sent?(:suspend, address: supervisor_address)
       end
     end
 
@@ -50,9 +46,7 @@ context "Host" do
       host.signal.send 'CONT'
 
       test "Resume message is sent to supervisor" do
-        assert host.send do
-          sent? :resume, address: supervisor_address
-        end
+        assert host.send.sent?(:resume, address: supervisor_address)
       end
     end
 
@@ -68,9 +62,7 @@ context "Host" do
       host.signal.send 'INT'
 
       test "Shutdown message is sent to supervisor" do
-        assert host.send do
-          sent? :shutdown, address: supervisor_address
-        end
+        assert host.send.sent?(:shutdown, address: supervisor_address)
       end
     end
   end
