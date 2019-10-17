@@ -8,7 +8,7 @@ context "Host" do
       host.register Controls::ComponentInitiator::RaisesError
 
       test "Error is raised" do
-        assert_raises Controls::Error::Example do
+        assert_raises(Controls::Error::Example) do
           host.start
         end
       end
@@ -25,7 +25,7 @@ context "Host" do
       end
 
       test "Error is raised" do
-        assert_raises Controls::Error::Example do
+        assert_raises(Controls::Error::Example) do
           host.start
         end
       end
