@@ -7,7 +7,8 @@ module ComponentHost
     host.instance_exec host, &block
 
     host.start do
-      logger.info(tags: [:*, :component, :start, :lifecycle]) { "Started: #{name} (ProcessID: #{::Process.pid})" }
+      ## logger.info(tags: [:*, :component, :start, :lifecycle]) { "Started: #{name} (ProcessID: #{::Process.pid})" }
+      logger.debug(tags: [:*, :component, :start, :lifecycle]) { "Started: #{name} (ProcessID: #{::Process.pid})" }
     end
   end
 end

@@ -83,9 +83,13 @@ module ComponentHost
 
     def start_components(&block)
       components.each do |component|
-        logger.info(tag: :*) { "Starting component: #{component.initiator} (Name: #{component.name || '(none)'})" }
+        ## logger.info(tag: :*) { "Starting component: #{component.initiator} (Name: #{component.name || '(none)'})" }
+        logger.trace(tag: :*) { "Starting component: #{component.initiator} (Name: #{component.name || '(none)'})" }
+
         component.start
-        logger.info(tag: :*) { "Started component: #{component.initiator} (Name: #{component.name || '(none)'})" }
+
+        ## logger.info(tag: :*) { "Started component: #{component.initiator} (Name: #{component.name || '(none)'})" }
+        logger.debug(tag: :*) { "Started component: #{component.initiator} (Name: #{component.name || '(none)'})" }
 
         block.(component) if block
       end
