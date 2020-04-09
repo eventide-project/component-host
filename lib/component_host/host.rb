@@ -83,7 +83,9 @@ module ComponentHost
 
     def start_components(&block)
       components.each do |component|
-        STDOUT.puts "  Component: #{component.initiator} (Name: #{component.name || '(none)'})"
+        if ComponentHost::Defaults.startup_info?
+          STDOUT.puts "  Component: #{component.initiator} (Name: #{component.name || '(none)'})"
+        end
 
         logger.trace(tags: [:component_host, :start]) { "Starting component: #{component.initiator} (Name: #{component.name || '(none)'})" }
 
