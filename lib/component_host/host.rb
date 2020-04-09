@@ -16,13 +16,13 @@ module ComponentHost
     def register(initiator, name=nil, &block)
       initiator ||= proc { yield }
 
-      logger.trace { "Registering component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
+      logger.trace(tag: :component_host) { "Registering component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
 
       component = Component.new initiator, name
 
       components << component
 
-      logger.debug { "Registered component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
+      logger.debug(tag: :component_host) { "Registered component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
 
       component
     end
@@ -85,18 +85,18 @@ module ComponentHost
       components.each do |component|
         STDOUT.puts "  Component: #{component.initiator} (Name: #{component.name || '(none)'})"
 
-        logger.trace(tag: :*) { "Starting component: #{component.initiator} (Name: #{component.name || '(none)'})" }
+        logger.trace(tags: [:component_host, :start]) { "Starting component: #{component.initiator} (Name: #{component.name || '(none)'})" }
 
         component.start
 
-        logger.debug(tag: :*) { "Started component: #{component.initiator} (Name: #{component.name || '(none)'})" }
+        logger.info(tags: [:component_host, :start]) { "Started component: #{component.initiator} (Name: #{component.name || '(none)'})" }
 
         block.(component) if block
       end
 
     rescue => error
       record_errors_observer.(error)
-      logger.fatal(tags: [:*, :component, :lifecycle]) { "#{error.message} (Error: #{error.class})" }
+      logger.fatal(tags: [:*, :component_host, :start]) { "#{error.message} (Error: #{error.class})" }
       raise error
     end
 

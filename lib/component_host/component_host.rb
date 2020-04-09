@@ -8,6 +8,7 @@ module ComponentHost
 
     STDOUT.puts
     STDOUT.puts "Host: #{name}"
+    logger.info(tags: [:component_host, :start, :lifecycle]) { "Starting host: #{name} (Process ID: #{::Process.pid})" }
     STDOUT.puts
 
     host.start do
@@ -16,7 +17,7 @@ module ComponentHost
       STDOUT.puts "Process ID: #{::Process.pid}"
       STDOUT.puts
 
-      logger.debug(tags: [:*, :component, :start, :lifecycle]) { "Started host process: #{name} (Process ID: #{::Process.pid})" }
+      logger.info(tags: [:component_host, :start, :lifecycle]) { "Started host: #{name} (Process ID: #{::Process.pid})" }
     end
   end
 end
