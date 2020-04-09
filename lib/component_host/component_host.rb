@@ -8,17 +8,17 @@ module ComponentHost
 
     if Defaults.env_var_info?
       STDOUT.puts
-      STDOUT.puts "Environment Variables"
-      STDOUT.puts "  ENTITY_CACHE_SCOPE: #{ENV['ENTITY_CACHE_SCOPE'].inspect}"
-      STDOUT.puts "  MESSAGE_STORE_SETTINGS_PATH: #{ENV['MESSAGE_STORE_SETTINGS_PATH'].inspect}"
-      STDOUT.puts "  HANDLE_STRICT: #{ENV['HANDLE_STRICT'].inspect}"
-      STDOUT.puts "  LOG_LEVEL: #{ENV['LOG_LEVEL'].inspect}"
-      STDOUT.puts "  LOG_TAGS: #{ENV['LOG_TAGS'].inspect}"
-      STDOUT.puts "  LOG_HEADER: #{ENV['LOG_HEADER'].inspect}"
-      STDOUT.puts "  LOG_FORMATTERS: #{ENV['LOG_FORMATTERS'].inspect}"
-      STDOUT.puts "  CONSOLE_DEVICE: #{ENV['CONSOLE_DEVICE'].inspect}"
-      STDOUT.puts "  STARTUP_INFO: #{ENV['STARTUP_INFO'].inspect}"
-      STDOUT.puts "  ENV_VAR_INFO: #{ENV['ENV_VAR_INFO'].inspect}"
+      STDOUT.puts "Environment Variables:"
+      STDOUT.puts "  ENTITY_CACHE_SCOPE: #{ENV['ENTITY_CACHE_SCOPE'] || '(not set)'}"
+      STDOUT.puts "  MESSAGE_STORE_SETTINGS_PATH: #{ENV['MESSAGE_STORE_SETTINGS_PATH'] || '(not set)'}"
+      STDOUT.puts "  HANDLE_STRICT: #{ENV['HANDLE_STRICT'] || '(not set)'}"
+      STDOUT.puts "  LOG_LEVEL: #{ENV['LOG_LEVEL'] || '(not set)'}"
+      STDOUT.puts "  LOG_TAGS: #{ENV['LOG_TAGS'] || '(not set)'}"
+      STDOUT.puts "  LOG_HEADER: #{ENV['LOG_HEADER'] || '(not set)'}"
+      STDOUT.puts "  LOG_FORMATTERS: #{ENV['LOG_FORMATTERS'] || '(not set)'}"
+      STDOUT.puts "  CONSOLE_DEVICE: #{ENV['CONSOLE_DEVICE'] || '(not set)'}"
+      STDOUT.puts "  STARTUP_INFO: #{ENV['STARTUP_INFO'] || '(not set)'}"
+      STDOUT.puts "  ENV_VAR_INFO: #{ENV['ENV_VAR_INFO'] || '(not set)'}"
     end
 
     if Defaults.startup_info?
