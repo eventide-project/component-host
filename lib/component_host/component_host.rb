@@ -8,6 +8,8 @@ module ComponentHost
 
     if Defaults.env_var_info?
       STDOUT.puts
+      STDOUT.puts RUBY_DESCRIPTION
+      STDOUT.puts
       STDOUT.puts "Environment Variables:"
       STDOUT.puts "  ENTITY_CACHE_SCOPE: #{ENV['ENTITY_CACHE_SCOPE'] || '(not set)'}"
       STDOUT.puts "  MESSAGE_STORE_SETTINGS_PATH: #{ENV['MESSAGE_STORE_SETTINGS_PATH'] || '(not set)'}"
