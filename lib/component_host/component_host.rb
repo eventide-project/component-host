@@ -24,6 +24,7 @@ module ComponentHost
       STDOUT.puts
       STDOUT.puts "Host: #{name}"
     end
+    logger.info(tags: [:component_host, :start, :lifecycle]) { "#{RUBY_DESCRIPTION} (Process ID: #{::Process.pid})" }
     logger.info(tags: [:component_host, :start, :lifecycle]) { "Starting host: #{name} (Process ID: #{::Process.pid})" }
 
     if Defaults.startup_info?
