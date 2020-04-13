@@ -14,9 +14,6 @@ module ComponentHost
       STDOUT.puts "  HANDLE_STRICT: #{ENV['HANDLE_STRICT'] || '(not set)'}"
       STDOUT.puts "  LOG_LEVEL: #{ENV['LOG_LEVEL'] || '(not set)'}"
       STDOUT.puts "  LOG_TAGS: #{ENV['LOG_TAGS'] || '(not set)'}"
-      STDOUT.puts "  LOG_HEADER: #{ENV['LOG_HEADER'] || '(not set)'}"
-      STDOUT.puts "  LOG_FORMATTERS: #{ENV['LOG_FORMATTERS'] || '(not set)'}"
-      STDOUT.puts "  CONSOLE_DEVICE: #{ENV['CONSOLE_DEVICE'] || '(not set)'}"
       STDOUT.puts "  STARTUP_INFO: #{ENV['STARTUP_INFO'] || '(not set)'}"
       STDOUT.puts "  ENV_VAR_INFO: #{ENV['ENV_VAR_INFO'] || '(not set)'}"
     end
