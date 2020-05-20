@@ -14,6 +14,7 @@ module ComponentHost
       STDOUT.puts "  ENTITY_CACHE_SCOPE: #{ENV['ENTITY_CACHE_SCOPE'] || '(not set)'}"
       STDOUT.puts "  MESSAGE_STORE_SETTINGS_PATH: #{ENV['MESSAGE_STORE_SETTINGS_PATH'] || '(not set)'}"
       STDOUT.puts "  HANDLE_STRICT: #{ENV['HANDLE_STRICT'] || '(not set)'}"
+      STDOUT.puts "  POLL_INTERVAL_MILLISECONDS: #{ENV['POLL_INTERVAL_MILLISECONDS'] || '(not set)'}"
       STDOUT.puts "  LOG_LEVEL: #{ENV['LOG_LEVEL'] || '(not set)'}"
       STDOUT.puts "  LOG_TAGS: #{ENV['LOG_TAGS'] || '(not set)'}"
       STDOUT.puts "  STARTUP_INFO: #{ENV['STARTUP_INFO'] || '(not set)'}"
