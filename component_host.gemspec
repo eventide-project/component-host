@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'evt-component_host'
-  s.version = '2.0.0.7'
+  s.version = '2.0.0.8'
   s.summary = 'Host components inside a single physical process'
   s.description = ' '
 
