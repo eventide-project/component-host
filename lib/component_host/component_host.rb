@@ -38,6 +38,7 @@ module ComponentHost
         STDOUT.puts "Host running: #{name}"
         STDOUT.puts "Process ID: #{::Process.pid}"
         STDOUT.puts
+        STDOUT.flush
       end
 
       logger.info(tags: [:component_host, :start, :lifecycle]) { "Started host: #{name} (Process ID: #{::Process.pid})" }
