@@ -13,12 +13,10 @@ module ComponentHost
       instance
     end
 
-    def register(initiator, name=nil, &block)
-      initiator ||= proc { yield }
-
+    def register(initiator, name=nil)
       logger.trace(tag: :component_host) { "Registering component (Component Initiator: #{initiator}, Name: #{name || '(none)'})" }
 
-      component = Component.new initiator, name
+      component = Component.new(initiator, name)
 
       components << component
 
