@@ -2,7 +2,7 @@ require 'actor'
 require 'async_invocation'
 require 'casing'
 require 'log'
-require 'virtual'
+require 'template_method'
 
 require 'component_host/log'
 require 'component_host/signal'

@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'evt-async_invocation'
   s.add_runtime_dependency 'evt-casing'
   s.add_runtime_dependency 'evt-log'
-  s.add_runtime_dependency 'evt-virtual'
+  s.add_runtime_dependency 'evt-template_method'
 
   s.add_development_dependency 'test_bench'
 end
